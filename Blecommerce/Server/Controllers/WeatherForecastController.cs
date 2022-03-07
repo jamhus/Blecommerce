@@ -1,4 +1,3 @@
-using Blecommerce.Shared;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Blecommerce.Server.Controllers
