@@ -1,0 +1,7 @@
+﻿ .media-img {
+    transition: transform .2s;
+}
+
+.media-img:hover {
+    transform: scale(1.1);
+}

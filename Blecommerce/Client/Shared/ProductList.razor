@@ -1,31 +1,29 @@
-﻿<ul class="list-unstyled">
-    @foreach (var product in Products)
-   {
-       <li class="media my-3">
-           <div class="media-img-wrapper mr-2">
-               <a href="#">
-                   <img class="media-img" src=@product.ImageUrl alt=@product.Title/>
-               </a>
-           </div>
-           <div class="media-body">
-                <a href="#">
-                   <h4 class="mb-0">
-                       @product.Title
-                   </h4>
-                   <p>@product.Description</p>
-                   <h5>
-                       $@product.Price
-                   </h5>
-               </a>
-           </div>
-       </li>
-   }
-</ul>
+﻿
+<div class="container">
+        <div class="row">
+        @foreach (var product in Products)
+        {
+            <div class="col-12 col-md-6 col-lg-3 mb-5">
+                <div class="card overflow-hidden">
+                    <img class="card-img-top media-img" src=@product.ImageUrl alt=@product.Title>
+                    <div class="card-body">
+                        <h4 class="card-title">@product.Title</h4>
+                        <p class="card-text">@product.Description</p>
+                        <h5 class="price">
+                            $@product.Price
+                        </h5>
+                        <a href="#" class="btn btn-primary">Go somewhere</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
 
 @code {
     private static List<Product> Products = new List<Product>
     {
-        new Product 
+        new Product
         {
             Id = 1,
             Title = "Onda drömmar",
