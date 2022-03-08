@@ -1,7 +1,7 @@
 global using Blecommerce.Shared;
 global using Microsoft.EntityFrameworkCore;
-using Blecommerce.Server.Data;
-using Microsoft.AspNetCore.ResponseCompression;
+global using Blecommerce.Server.Data;
+global using Blecommerce.Server.Services.ProductService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +16,8 @@ builder.Services.AddRazorPages();
 
 builder.Services.AddEndpointsApiExplorer(); 
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddScoped<IProductService,ProductService>();
 
 var app = builder.Build();
 
