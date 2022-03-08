@@ -1,6 +1,4 @@
-﻿using Blecommerce.Shared;
-using Microsoft.AspNetCore.Components;
-using System.Net.Http.Json;
+﻿using Microsoft.AspNetCore.Components;
 
 namespace Blecommerce.Client.Shared
 {

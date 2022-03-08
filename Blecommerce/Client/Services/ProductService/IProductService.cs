@@ -6,5 +6,6 @@ namespace Blecommerce.Client.Services.ProductService
         List<Product> products { get; set; }
 
         Task GetProducts();
+        Task<ServiceResponse<Product>> GetProduct(int id);
     }
 }

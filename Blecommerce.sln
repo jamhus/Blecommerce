@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31912.275
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blecommerce.Server", "Blecommerce\Server\Blecommerce.Server.csproj", "{A6BCE5BA-DD01-4D0F-868A-7015324B57EC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blecommerce.Server", "Blecommerce\Server\Blecommerce.Server.csproj", "{A6BCE5BA-DD01-4D0F-868A-7015324B57EC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blecommerce.Client", "Blecommerce\Client\Blecommerce.Client.csproj", "{D3566A8A-FDAB-48D4-B8D2-B672C96E7642}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blecommerce.Client", "Blecommerce\Client\Blecommerce.Client.csproj", "{D3566A8A-FDAB-48D4-B8D2-B672C96E7642}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blecommerce.Shared", "Blecommerce\Shared\Blecommerce.Shared.csproj", "{834DE07F-307B-41EC-BA49-DF8716EA9DE1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blecommerce.Shared", "Blecommerce\Shared\Blecommerce.Shared.csproj", "{834DE07F-307B-41EC-BA49-DF8716EA9DE1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

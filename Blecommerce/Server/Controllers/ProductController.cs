@@ -18,5 +18,11 @@ namespace Blecommerce.Server.Controllers
         {
             return await _productService.GetProductsAsync();
         }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<ServiceResponse<Product>>> GetProduct(int id)
+        {
+            return await _productService.GetProductAsync(id);
+        }
     }
 }
