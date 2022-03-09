@@ -14,7 +14,9 @@ namespace Blecommerce.Client.Services.ProductService
         public async Task<ServiceResponse<Product>> GetProduct(int id)
         {
             var result = await _http.GetFromJsonAsync<ServiceResponse<Product>>($"api/product/{id}");
+            if (result != null && result.Data != null)
             return result;
+            return new ServiceResponse<Product>();
         }
 
         public async Task GetProducts()

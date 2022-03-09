@@ -1,27 +1,29 @@
-﻿
-@if (ProductService.products == null || ProductService.products.Count == 0)
+﻿@if (ProductService.products == null || ProductService.products.Count == 0)
 {
     <span> Loading products...</span>
 }
 else
 {
-    <div class="row">
-        @foreach (var product in ProductService.products)
-        {
-            <div class="col-12 col-md-6 col-lg-3 mb-5">
-                <div class="card h-100 overflow-hidden">
-                    <img class="card-img-top media-img zoomed" src=@product.ImageUrl alt=@product.Title>
-                    <div class="card-body position-relative">
-                        <a href="/product/@product.Id">
-                            <h4 class="card-title">@product.Title</h4>
-                        </a>
-                        <p class="card-text">@product.Description</p>
-                        <h5 class="text-success position-absolute bottom-0">
-                            $@product.Price
-                        </h5>
-                    </div>
-                </div>
-            </div>
-        }
-    </div>
+   
+        <MudGrid>
+            @foreach (var product in ProductService.products)
+            {
+                 var link = "/product/" + product.Id;
+
+                <MudItem xs="12" sm="6" md="3">
+                        <MudCard Class="d-flex flex-column relative overflow-hidden" Style="height:100%">
+                            <MudImage ObjectFit="@ObjectFit.Fill"  ObjectPosition="ObjectPosition.Center" Class="zoomed" Height="250" Src=@product.ImageUrl />
+                            <MudCardContent Style="height: 40%">
+                                <MudLink Href="@link" Typo="Typo.h5">@product.Title</MudLink>
+                                <MudText Typo="Typo.body2">@product.Description</MudText>
+                            </MudCardContent>
+                            <MudCardActions Class="relative object-bottom">
+                                <MudText Color="Color.Success" Typo="Typo.h6">$@product.Price</MudText>
+                            </MudCardActions>
+                        </MudCard>
+                </MudItem>
+
+            }
+        </MudGrid>
+
 }

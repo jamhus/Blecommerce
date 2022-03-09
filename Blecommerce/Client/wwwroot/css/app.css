@@ -72,6 +72,7 @@ a, .btn-link {
     transition: transform .2s;
 }
 
-    .zoomed:hover {
-        transform: scale(1.1);
-    }
+.zoomed:hover {
+    transform: scale(1.1);
+
+}
