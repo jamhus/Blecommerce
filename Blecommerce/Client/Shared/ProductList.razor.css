@@ -1,9 +1,1 @@
-﻿ .media-img {
-    height: 300px;
-    width: 300px;
-    transition: transform .2s;
-}
-
-.media-img:hover {
-    transform: scale(1.1);
-}
+﻿
