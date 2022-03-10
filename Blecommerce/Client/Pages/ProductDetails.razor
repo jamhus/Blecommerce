@@ -7,23 +7,21 @@
 }
 else
 {
-    <div class="d-flex flex-wrap flex-md-nowrap">
-        <div class="flex-shrink-0 ms-3 flex-fill">
-            <img class="media-img" src=@product.ImageUrl alt=@product.Title />
-        </div>
-        <div class="flex-grow-1 ms-3">
-            <h2 class="mb-3 mt-3 mt-md-0">@product.Title</h2>
-            <p class="mb-3">@product.Description</p>
-            <h4 class="text-success">
-                $@product.Price
-            </h4>
-        </div>
-    </div>
+    <MudPaper>
+        <MudCard Class="d-flex flex-row">
+            <MudImage ObjectPosition="@ObjectPosition.Center" Src=@product.ImageUrl Width="332" Height="250" Alt=@product.Title Elevation="25" Class="rounded-lg ma-4"/>
+            <MudCardContent Class="d-flex flex-column" Style="width: 40%">
+                <MudText Class="mb-5" Typo="Typo.h5">@product.Title</MudText>
+                <MudText Typo="Typo.body2">@product.Description</MudText>
+                <MudText Class="mt-auto" Color="Color.Success" Typo="Typo.h6">$@product.Price</MudText>
+            </MudCardContent>
+        </MudCard>
+  </MudPaper>
 }
 
 @code {
     private Product? product = null;
-    private string message;
+    private string message = String.Empty;
 
     [Parameter]
     public int Id { get; set; }
