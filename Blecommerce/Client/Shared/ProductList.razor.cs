@@ -7,9 +7,14 @@ namespace Blecommerce.Client.Shared
         [Inject]
         IProductService ProductService { get; set; } = default!;
 
-        protected override async Task OnInitializedAsync()
+        protected override void OnInitialized()
         {
-            await ProductService.GetProducts();
+            ProductService.ProductsChanged += StateHasChanged;
+        }
+
+        public void Dispose()
+        {
+            ProductService.ProductsChanged -= StateHasChanged;
         }
     }
 }
