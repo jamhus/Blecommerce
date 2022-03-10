@@ -5,12 +5,12 @@
 
     @foreach (var category in CategoryService.categories)
     {
-        var dict = new Dictionary<string,string>();
+        var dict = new Dictionary<int,string>();
 
-        dict["Movie"] = Icons.Filled.Movie;
-        dict["Book"] = Icons.Filled.Book;
-        dict["Game"] = Icons.Filled.Games;
-        var icon = dict[category.Icon];
+        dict[1] = Icons.Filled.MenuBook;
+        dict[2] = Icons.Filled.LocalMovies;
+        dict[3] = Icons.Filled.VideogameAsset;
+        var icon = dict[category.Id];
         <MudNavLink Icon="@icon" Href=@category.Url Match="NavLinkMatch.All">@category.Name</MudNavLink>
     }
 </MudNavMenu>

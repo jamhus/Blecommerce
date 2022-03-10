@@ -37,21 +37,18 @@
                     Id = 1,
                     Name = "Books",
                     Url = "books",
-                    Icon = "Icons.Filled.MenuBook"
                 },
                 new Category
                 {
                     Id = 2,
                     Name = "Movies",
                     Url = "movies",
-                    Icon= "Icons.Filled.LocalMovies"
                 },
                 new Category
                 {
                     Id = 3,
                     Name = "Games",
                     Url = "video-games",
-                    Icon = "Icons.Filled.VideogameAsset"
                 }
                 );
             modelBuilder.Entity<Product>().HasData(

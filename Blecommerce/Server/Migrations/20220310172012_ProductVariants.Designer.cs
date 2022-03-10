@@ -3,6 +3,7 @@ using Blecommerce.Server.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Blecommerce.Server.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20220310172012_ProductVariants")]
+    partial class ProductVariants
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -28,6 +30,10 @@ namespace Blecommerce.Server.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Icon")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -45,18 +51,21 @@ namespace Blecommerce.Server.Migrations
                         new
                         {
                             Id = 1,
+                            Icon = "MenuBook",
                             Name = "Books",
                             Url = "books"
                         },
                         new
                         {
                             Id = 2,
+                            Icon = "LocalMovies",
                             Name = "Movies",
                             Url = "movies"
                         },
                         new
                         {
                             Id = 3,
+                            Icon = "VideogameAsset",
                             Name = "Games",
                             Url = "video-games"
                         });
