@@ -10,9 +10,8 @@ namespace Blecommerce.Shared
 {
     public class ProductVariant
     {
-        [JsonIgnore]
-
         public int ProductId { get; set; }
+        [JsonIgnore]
         public Product Product { get; set; } = default!;
         public int ProductTypeId { get; set; }
         public ProductType ProductType { get; set; } = default!;

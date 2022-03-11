@@ -13,7 +13,10 @@ namespace Blecommerce.Server.Services.ProductService
 
         public async Task<ServiceResponse<Product>> GetProductAsync(int id)
         {
-            var product = await _context.Products.FindAsync(id);
+            var product = await _context.Products
+                .Include(p => p.Variants)
+                .ThenInclude(p => p.ProductType)
+                .FirstOrDefaultAsync(p => p.Id == id);
             var response = new ServiceResponse<Product>();
             if (product == null)
             {
@@ -29,7 +32,10 @@ namespace Blecommerce.Server.Services.ProductService
 
         public async Task<ServiceResponse<List<Product>>> GetProductsAsync()
         {
-            var products = await _context.Products.ToListAsync();
+            var products = await _context.Products
+                .Include(p => p.Variants)
+                .ToListAsync();
+
             var response = new ServiceResponse<List<Product>>()
             {
                 Data = products
@@ -41,8 +47,11 @@ namespace Blecommerce.Server.Services.ProductService
         {
             var response = new ServiceResponse<List<Product>>
             {
-                Data = await _context.Products.Where(p => p.Category!.Url.ToLower() == categoryUrl.ToLower()).ToListAsync()
-            };
+                Data = await _context.Products
+                .Where(p => p.Category!.Url.ToLower() == categoryUrl.ToLower())
+                .Include(p => p.Variants)
+                .ToListAsync()
+        };
 
             return response;
         }

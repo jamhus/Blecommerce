@@ -8,20 +8,32 @@
 else
 {
     <MudPaper>
-        <MudCard Class="d-flex flex-row">
-            <MudImage ObjectPosition="@ObjectPosition.Center" Src=@product.ImageUrl Width="332" Height="250" Alt=@product.Title Elevation="25" Class="rounded-lg ma-4"/>
-            <MudCardContent Class="d-flex flex-column" Style="width: 40%">
+        <MudCard Class="d-flex flex-lg-row">
+            <MudImage ObjectPosition="@ObjectPosition.Center" Src=@product.ImageUrl Width="350" Height="350" Alt=@product.Title Elevation="25" Class="rounded-lg ma-4" />
+            <MudCardContent Class="d-flex flex-column justify-content-around w-sm-100" >
                 <MudText Class="mb-5" Typo="Typo.h5">@product.Title</MudText>
-                <MudText Typo="Typo.body2">@product.Description</MudText>
-@*                <MudText Class="mt-auto" Color="Color.Success" Typo="Typo.h6">$@product.Price</MudText>
-*@            </MudCardContent>
+                <MudText Class="mb-auto" Typo="Typo.body2">@product.Description</MudText>
+                <MudText>
+                @if (GetSelectedVariant() != null)
+                {
+                    @if (GetSelectedVariant().OriginalPrice > GetSelectedVariant().Price)
+                    {
+                        <MudText Class="mt-auto disabled-text" Style="@($"color:{Colors.Grey.Darken1};")" Typo="Typo.h6">$@GetSelectedVariant().OriginalPrice</MudText>
+                    }
+                    <MudText Class="mt-auto" Color="Color.Success" Typo="Typo.h4">$@GetSelectedVariant().Price</MudText>
+
+                }
+
+                </MudText>
+            </MudCardContent>
         </MudCard>
-  </MudPaper>
+    </MudPaper>
 }
 
 @code {
     private Product? product = null;
     private string message = String.Empty;
+    private int currentTypeId = 1;
 
     [Parameter]
     public int Id { get; set; }
@@ -38,6 +50,16 @@ else
         else
         {
             product = result.Data;
+            if (product!.Variants.Count > 0)
+            {
+                currentTypeId = product.Variants[0].ProductTypeId;
+            }
         }
+    }
+
+    private ProductVariant GetSelectedVariant()
+    {
+        var variant = product.Variants.FirstOrDefault(v => v.ProductTypeId == currentTypeId);
+        return variant;
     }
 }

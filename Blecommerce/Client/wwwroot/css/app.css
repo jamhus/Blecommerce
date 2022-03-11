@@ -76,3 +76,24 @@ a, .btn-link {
     transform: scale(1.1);
 
 }
+.disabled-text {
+    text-decoration: line-through;
+}
+
+.w-sm-100 {
+    width: 40%;
+}
+
+.flex-lg-row {
+    flex-direction: row;
+}
+
+@media screen and (max-width: 685px) {
+    .w-sm-100 {
+        width: 100%;
+    }
+
+    .flex-lg-row {
+        flex-direction: column;
+    }
+}
