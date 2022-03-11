@@ -88,6 +88,10 @@ a, .btn-link {
     flex-direction: row;
 }
 
+.details-img-margin {
+    margin: 20px;
+}
+
 @media screen and (max-width: 685px) {
     .w-sm-100 {
         width: 100%;
@@ -95,5 +99,10 @@ a, .btn-link {
 
     .flex-lg-row {
         flex-direction: column;
+    }
+
+    .details-img-margin {
+        margin: auto;
+        margin-top: 30px;
     }
 }
