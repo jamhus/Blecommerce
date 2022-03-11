@@ -30,5 +30,11 @@ namespace Blecommerce.Server.Controllers
         {
             return await _productService.GetProductsByCategory(categoryUrl);
         }
+
+        [HttpGet("search/{searchText}")]
+        public async Task<ActionResult<ServiceResponse<List<Product>>>> SearchProduct(string searchText)
+        {
+            return await _productService.SearchProducts(searchText);
+        }
     }
 }

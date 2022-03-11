@@ -6,6 +6,7 @@ namespace Blecommerce.Client.Shared
     {
         [Inject]
         IProductService ProductService { get; set; } = default!;
+        internal string Search { get; set; } = String.Empty;
 
         protected override void OnInitialized()
         {

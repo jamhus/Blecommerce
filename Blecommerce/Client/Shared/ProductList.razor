@@ -1,11 +1,14 @@
 ﻿@if (ProductService.products == null || ProductService.products.Count == 0)
 {
-    <span> Loading products...</span>
+    <span>@ProductService.Message</span>
 }
 else
 {
    
         <MudGrid>
+            <MudItem xs="12">
+                <Search/>
+            </MudItem>
             @foreach (var product in ProductService.products)
             {
                  var link = "/product/" + product.Id;
