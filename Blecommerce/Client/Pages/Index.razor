@@ -5,6 +5,14 @@
 
 <PageTitle>Blecommerce</PageTitle>
 
+@if (SearchText == null && CategoryUrl == null)
+{
+    <center>
+        <MudText Typo="Typo.h2">
+            Top Products of Today
+        </MudText>
+    </center>
+}
 <ProductList />
 
 @code {
@@ -14,7 +22,7 @@
     public string? SearchText { get; set; } = null;
     protected override async Task OnParametersSetAsync()
     {
-        if(SearchText != null)
+        if (SearchText != null)
         {
             await ProductService.SearchProducts(SearchText);
         }

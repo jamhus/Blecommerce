@@ -26,7 +26,7 @@ namespace Blecommerce.Client.Services.ProductService
         {
             var result =
                 await _http.GetFromJsonAsync<ServiceResponse<List<Product>>>
-                (categoryUrl == null ? "api/product" : $"api/product/category/{categoryUrl}");
+                (categoryUrl == null ? "api/product/featured" : $"api/product/category/{categoryUrl}");
             if(result != null && result.Data != null)
             products = result.Data;
 

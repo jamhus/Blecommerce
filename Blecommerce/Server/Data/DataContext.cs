@@ -60,6 +60,7 @@
                     ImageUrl = "https://images.nextory.com/9789113101569.jpg?fit=clip&w=340",
                    // Price = 9.99m,
                     CategoryId = 1,
+                    Featured = true,
                 },
                 new Product
                 {
@@ -87,6 +88,8 @@
                     Title = "The Matrix",
                     Description = "The Matrix is a 1999 science fiction action film written and directed by the Wachowskis, and produced by Joel Silver. Starring Keanu Reeves, Laurence Fishburne, Carrie-Anne Moss, Hugo Weaving, and Joe Pantoliano, and as the first installment in the Matrix franchise, it depicts a dystopian future in which humanity is unknowingly trapped inside a simulated reality, the Matrix",
                     ImageUrl = "https://upload.wikimedia.org/wikipedia/en/c/c1/The_Matrix_Poster.jpg",
+                    Featured = true,
+
                 },
                 new Product
                 {
@@ -115,6 +118,7 @@
                     //Price = 49.99m,
                     Description = "Half-Life är en serie datorspel med science fiction-tema. Alla spel är förstapersonsskjutare, linjära och designade för en spelare. Spelen i serien har utvecklats av Valve Corporation, Gearbox Software och Taito Corporation. Det första spelet, Half-Life, var Valves första titel och släpptes i november 1998.",
                     ImageUrl = "https://upload.wikimedia.org/wikipedia/en/2/25/Half-Life_2_cover.jpg",
+                    Featured = true,
 
                 },
                 new Product
@@ -143,6 +147,8 @@
                     Title = "Xbox",
                     Description = "The Xbox is a home video game console and the first installment in the Xbox series of video game consoles manufactured by Microsoft.", 
                     ImageUrl = "https://upload.wikimedia.org/wikipedia/commons/4/43/Xbox-console.jpg",
+                    Featured = true,
+
                 },
                 new Product
                 {

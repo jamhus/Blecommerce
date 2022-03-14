@@ -11,6 +11,20 @@ namespace Blecommerce.Server.Services.ProductService
             _context = context;
         }
 
+        public async Task<ServiceResponse<List<Product>>> GetFeaturedProducts()
+        {
+            var products = await _context.Products
+             .Include(p => p.Variants)
+             .Where(p => p.Featured == true)
+             .ToListAsync();
+
+            var response = new ServiceResponse<List<Product>>()
+            {
+                Data = products
+            };
+            return response;
+        }
+
         public async Task<ServiceResponse<Product>> GetProductAsync(int id)
         {
             var product = await _context.Products
