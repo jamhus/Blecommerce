@@ -1,4 +1,6 @@
 global using Blecommerce.Shared;
+global using Blecommerce.Shared.DTOS;
+
 global using System.Net.Http.Json;
 global using Blecommerce.Client.Services.ProductService;
 global using Blecommerce.Client.Services.CategoryService;

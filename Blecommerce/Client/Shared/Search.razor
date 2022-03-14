@@ -1,30 +1,32 @@
 ﻿@inject NavigationManager NavigationManager
 @inject IProductService ProductService
 
-<MudTextField 
-    @bind-Value="@searchText"
-    DebounceInterval="500" 
-    OnDebounceIntervalElapsed="HandleIntervalElapsed"
-    Label="Search" 
-    Variant="Variant.Outlined" 
-    Adornment="Adornment.End" 
-    AdornmentIcon="@Icons.Filled.Search" 
-    AdornmentColor="Color.Secondary" />
+<MudTextField @bind-Value="@searchText"
+              DebounceInterval="500"
+              OnDebounceIntervalElapsed="HandleIntervalElapsed"
+              Label="Search"
+              Variant="Variant.Outlined"
+              Adornment="Adornment.End"
+              AdornmentIcon="@Icons.Filled.Search"
+              AdornmentColor="Color.Secondary" />
 
 @code {
     private string searchText = string.Empty;
 
     public void SearchProducts()
     {
-        NavigationManager.NavigateTo($"search/{searchText}");
+        NavigationManager.NavigateTo($"search/{searchText}/1");
     }
 
     void HandleIntervalElapsed(string debouncedText)
     {
-        SearchProducts();
         if (String.IsNullOrWhiteSpace(debouncedText))
         {
             NavigationManager.NavigateTo($"/");
+        }
+        else
+        {
+            SearchProducts();
         }
     }
 }

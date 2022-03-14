@@ -6,6 +6,8 @@ namespace Blecommerce.Client.Shared
     {
         [Inject]
         IProductService ProductService { get; set; } = default!;
+        [Inject]
+        NavigationManager NavigationManager { get; set; } = default!;
         internal string Search { get; set; } = String.Empty;
 
         protected override void OnInitialized()
@@ -32,6 +34,12 @@ namespace Blecommerce.Client.Shared
 
             decimal price = variants.Min(v => v.Price);
             return $"Starting at ${price}";
+
+        }
+
+        private void PageChanged(int i)
+        {
+            NavigationManager.NavigateTo($"search/{ProductService.LastSearchString}/{i}");
 
         }
     }

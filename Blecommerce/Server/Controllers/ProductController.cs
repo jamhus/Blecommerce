@@ -31,10 +31,10 @@ namespace Blecommerce.Server.Controllers
             return await _productService.GetProductsByCategory(categoryUrl);
         }
 
-        [HttpGet("search/{searchText}")]
-        public async Task<ActionResult<ServiceResponse<List<Product>>>> SearchProduct(string searchText)
+        [HttpGet("search/{searchText}/{page}")]
+        public async Task<ActionResult<ServiceResponse<ProductSearchDto>>> SearchProduct(string searchText, int page = 1)
         {
-            return await _productService.SearchProducts(searchText);
+            return await _productService.SearchProducts(searchText,page);
         }   
         
         [HttpGet("featured")]

@@ -11,6 +11,9 @@ namespace Blecommerce.Client.Services.ProductService
         }
         public List<Product> products { get; set; } = new List<Product>();
         public string Message { get; set; } = "Loading products...";
+        public int CurrentPage { get; set; } = 1;
+        public int PageCount { get; set; } = 0;
+        public string LastSearchString { get; set; } = String.Empty;   
 
         public event Action ProductsChanged = default!;
 
@@ -33,13 +36,19 @@ namespace Blecommerce.Client.Services.ProductService
             ProductsChanged.Invoke();
         }
 
-        public async Task SearchProducts(string searchText)
-        {
-            var result = await _http.GetFromJsonAsync<ServiceResponse<List<Product>>>($"api/product/search/{searchText}");
-            if (result != null && result.Data != null)
-                products = result.Data;
 
-            if(products.Count == 0)
+        public async Task SearchProducts(string searchtext, int page)
+        {
+            LastSearchString = searchtext;
+            var result = await _http.GetFromJsonAsync<ServiceResponse<ProductSearchDto>>($"api/product/search/{searchtext}/{page}");
+            if (result != null && result.Data != null)
+            {
+                products = result.Data.Products;
+                CurrentPage = result.Data.CurrentPage;
+                PageCount = result.Data.Pages;
+            }
+
+            if (products.Count == 0)
             {
                 Message = "no products found";
             }

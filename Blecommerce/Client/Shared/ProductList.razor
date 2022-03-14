@@ -4,29 +4,38 @@
 }
 else
 {
-   
-        <MudGrid>
-            <MudItem xs="12">
-                <Search/>
+
+    <MudGrid>
+        <MudItem xs="12">
+            <Search />
+        </MudItem>
+        @foreach (var product in ProductService.products)
+        {
+            var link = "/product/" + product.Id;
+
+            <MudItem xs="12" sm="6" md="6" lg="3">
+                <MudCard Class="d-flex flex-column relative overflow-hidden" Style="height:100%">
+                    <MudImage ObjectFit="@ObjectFit.Cover" ObjectPosition="ObjectPosition.Top" Class="zoomed" Height="300" Src=@product.ImageUrl />
+                    <MudCardContent>
+                        <MudLink Href="@link" Typo="Typo.h5">@product.Title</MudLink>
+                        <MudText Typo="Typo.body2">@product.Description</MudText>
+                    </MudCardContent>
+                    <MudCardActions Class="mt-auto">
+                        <MudText Color="Color.Success" Typo="Typo.h6">@GetPriceText(product)</MudText>
+                    </MudCardActions>
+                </MudCard>
             </MudItem>
-            @foreach (var product in ProductService.products)
-            {
-                 var link = "/product/" + product.Id;
 
-                <MudItem xs="12" sm="6" md="6" lg="3">
-                        <MudCard Class="d-flex flex-column relative overflow-hidden" Style="height:100%">
-                            <MudImage ObjectFit="@ObjectFit.Cover"  ObjectPosition="ObjectPosition.Top" Class="zoomed" Height="300" Src=@product.ImageUrl />
-                            <MudCardContent>
-                                <MudLink Href="@link" Typo="Typo.h5">@product.Title</MudLink>
-                                <MudText Typo="Typo.body2">@product.Description</MudText>
-                            </MudCardContent>
-                            <MudCardActions Class="mt-auto">
-                                <MudText Color="Color.Success" Typo="Typo.h6">@GetPriceText(product)</MudText>
-                            </MudCardActions>
-                        </MudCard>
-                </MudItem>
+        }
+        <MudItem xs="12">
+           <MudPagination 
+                Color="Color.Primary" 
+                Rectangular ="true" 
+                Class="my-4" 
+                Count="@ProductService.PageCount" 
+                SelectedChanged="PageChanged"/>
+        </MudItem>
+    </MudGrid>
 
-            }
-        </MudGrid>
 
 }

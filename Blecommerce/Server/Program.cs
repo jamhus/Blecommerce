@@ -1,4 +1,5 @@
 global using Blecommerce.Shared;
+global using Blecommerce.Shared.DTOS;
 global using Microsoft.EntityFrameworkCore;
 global using Blecommerce.Server.Data;
 global using Blecommerce.Server.Services.ProductService;
