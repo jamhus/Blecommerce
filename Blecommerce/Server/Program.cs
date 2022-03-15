@@ -4,6 +4,7 @@ global using Microsoft.EntityFrameworkCore;
 global using Blecommerce.Server.Data;
 global using Blecommerce.Server.Services.ProductService;
 global using Blecommerce.Server.Services.CategoryService;
+global using Blecommerce.Server.Services.CartService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +22,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IProductService,ProductService>();
 builder.Services.AddScoped<ICategoryService,CategoryService>();
+builder.Services.AddScoped<ICartServiceBE,CartServiceBE>();
 
 var app = builder.Build();
 
