@@ -5,16 +5,18 @@ namespace Blecommerce.Server.Services.CartService
     public class CartService : ICartService
     {
         private readonly ILocalStorageService _localStorage;
+        private readonly HttpClient _http;
 
-        public CartService(ILocalStorageService localStorage)
+        public CartService(ILocalStorageService localStorage, HttpClient http)
         {
             _localStorage = localStorage;
+            _http = http;
         }
         public event Action OnChange = default!;
 
         public async Task AddToCart(CartItem item)
         {
-            var cart = await CreateCart();
+            var cart = await FetchOrCreateCart();
             cart.Add(item);
             await _localStorage.SetItemAsync("cart", cart);
             OnChange.Invoke();
@@ -22,11 +24,38 @@ namespace Blecommerce.Server.Services.CartService
 
         public async Task<List<CartItem>> GetCartItems()
         {
-            var cart = await CreateCart();
+            var cart = await FetchOrCreateCart();
               return cart;
         }
 
-        private async Task<List<CartItem>> CreateCart()
+        public async Task<List<CartProductDto>> GetCartProducts()
+        {
+            var cartItems = await _localStorage.GetItemAsync<List<CartItem>>("cart");
+            var response = await _http.PostAsJsonAsync("api/cart/products",cartItems);
+
+            var cartProducts = await response.Content.ReadFromJsonAsync<ServiceResponse<List<CartProductDto>>>();
+
+            return cartProducts.Data;
+        }
+
+        public async Task RemoveProductFromCart(int productId, int productTypeId)
+        {
+            var cart = await _localStorage.GetItemAsync<List<CartItem>>("cart");
+            if (cart == null)
+            {
+                return;
+            }
+
+            var cartItem = cart.Find(x => x.ProductId == productId && x.ProductTypeId == productTypeId);
+            if (cartItem != null)
+            {
+                cart.Remove(cartItem);
+                await _localStorage.SetItemAsync("cart", cart);
+                OnChange.Invoke();
+            }
+        }
+
+        private async Task<List<CartItem>> FetchOrCreateCart()
         {
            var cart = await _localStorage.GetItemAsync<List<CartItem>>("cart");
             if (cart == null)

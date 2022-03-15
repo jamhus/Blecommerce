@@ -1,9 +1,10 @@
 ﻿@inject ICartService CartService
 @inject ISyncLocalStorageService LocalStorage
+@inject NavigationManager NavigationManager 
 @implements IDisposable
 
 <MudBadge Content="@GetCurrentItemsCount()" Overlap="true" Color="Color.Secondary" Origin="Origin.CenterRight">
-            <MudIconButton Icon="@Icons.Material.Filled.ShoppingCart" Color="Color.Secondary" />
+            <MudIconButton Icon="@Icons.Material.Filled.ShoppingCart" OnClick="@GoToCart" Color="Color.Secondary" />
         </MudBadge>
 @code {
     private int GetCurrentItemsCount()
@@ -20,5 +21,10 @@
     public void Dispose()
     {
         CartService.OnChange -= StateHasChanged;
+    }
+
+    private void GoToCart()
+    {
+        NavigationManager.NavigateTo("/cart");
     }
 }

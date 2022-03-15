@@ -1,0 +1,83 @@
+﻿@page "/cart"
+@inject ICartService CartService
+@implements IDisposable
+
+<MudText Class="mb-10" Typo="Typo.h3">
+    Shopping cart
+</MudText>
+
+@if (cartProducts == null || cartProducts.Count == 0)
+{
+    <MudText Typo="Typo.h5">
+        @message
+    </MudText>
+}
+else
+{
+    <MudTable Class="mb-10" Items="cartProducts"
+          Hover="true" Elevation="1">
+        <HeaderContent>
+            <MudTh>Title</MudTh>
+            <MudTh>Image</MudTh>
+
+            <MudTh>Type</MudTh>
+            <MudTh>Price</MudTh>
+            <MudTh></MudTh>
+
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Title">@context.Title</MudTd>
+            <MudTd DataLabel="Image">
+                <MudAvatar Style="height:60px; width:60px;" Image=@context.ImageUrl />
+            </MudTd>
+            <MudTd DataLabel="Type">@context.ProductType</MudTd>
+
+            <MudTd DataLabel="Price">$@context.Price</MudTd>
+            <MudTd DataLabel="Actions">
+                <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="(e)=> DeleteFromCart(context)" Color="Color.Error" />
+            </MudTd>
+
+        </RowTemplate>
+    </MudTable>
+    <MudText Typo="Typo.h5">
+        Total (@cartProducts.Count): $@cartProducts.Sum(p => p.Price)
+    </MudText>
+}
+
+@code {
+    List<CartProductDto> cartProducts = null;
+    string message = "Loading cart...";
+
+    protected override async Task OnInitializedAsync()
+    {
+        CartService.OnChange += StateHasChanged;
+        await LoadCart();
+    }
+
+    private async void DeleteFromCart(CartProductDto item)
+    {
+        await CartService.RemoveProductFromCart(item.ProductId, item.ProductTypeId);
+        await LoadCart();
+        StateHasChanged();
+
+    }
+
+    private async Task LoadCart()
+    {
+        if ((await CartService.GetCartItems()).Count == 0)
+        {
+            message = "Your cart is empty.";
+            cartProducts = new List<CartProductDto>();
+        }
+        else
+        {
+            cartProducts = await CartService.GetCartProducts();
+        }
+    }
+
+    public void Dispose()
+    {
+        CartService.OnChange -= StateHasChanged;
+    }
+
+}
