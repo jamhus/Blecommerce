@@ -17,7 +17,14 @@ namespace Blecommerce.Server.Services.CartService
         public async Task AddToCart(CartItem item)
         {
             var cart = await FetchOrCreateCart();
-            cart.Add(item);
+            var sameItem = cart.Find(i => i.ProductId == item.ProductId && i.ProductTypeId == item.ProductTypeId);
+            if (sameItem == null){
+                cart.Add(item);
+            }
+            else
+            {
+                sameItem.Quantity += item.Quantity;
+            }
             await _localStorage.SetItemAsync("cart", cart);
             OnChange.Invoke();
         }
@@ -53,6 +60,23 @@ namespace Blecommerce.Server.Services.CartService
                 await _localStorage.SetItemAsync("cart", cart);
                 OnChange.Invoke();
             }
+        }
+
+        public async Task UpdateQuantity(CartProductDto cartProduct)
+        {
+            var cart = await _localStorage.GetItemAsync<List<CartItem>>("cart");
+            if (cart == null)
+            {
+                return;
+            }
+
+            var cartItem = cart.Find(x => x.ProductId == cartProduct.ProductId && x.ProductTypeId == cartProduct.ProductTypeId);
+            if (cartItem != null)
+            {
+                cartItem.Quantity = cartProduct.Quantity;
+                await _localStorage.SetItemAsync("cart", cart);
+            }
+            OnChange.Invoke();
         }
 
         private async Task<List<CartItem>> FetchOrCreateCart()

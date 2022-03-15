@@ -10,7 +10,7 @@
     private int GetCurrentItemsCount()
     {
         var cart = LocalStorage.GetItem<List<CartItem>>("cart");
-        return cart != null ? cart.Count : 0;
+        return cart != null ? cart.Sum(p=>p.Quantity) : 0;
     }
 
     protected override void OnInitialized()
