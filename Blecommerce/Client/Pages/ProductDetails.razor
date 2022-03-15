@@ -1,5 +1,6 @@
 ﻿@page "/product/{id:int}"
 @inject IProductService ProductSerivce
+@inject ICartService CartService
 
 @if (product == null)
 {
@@ -37,6 +38,7 @@ else
                     }
 
                 </MudText>
+                <MudIconButton Icon="@Icons.Material.Filled.AddShoppingCart" Variant="Variant.Filled" Color="Color.Primary" OnClick="@((e) => AddToCart())"  Style="width:100px" />
             </MudCardContent>
         </MudCard>
     </MudPaper>
@@ -73,5 +75,16 @@ else
     {
         var variant = product.Variants.FirstOrDefault(v => v.ProductTypeId == currentTypeId);
         return variant;
+    }
+
+    private async Task AddToCart()
+    {
+        var productVariant = GetSelectedVariant();
+        var cartItem = new CartItem
+            {
+                ProductId = productVariant.ProductId,
+                ProductTypeId = productVariant.ProductTypeId
+            };
+        await CartService.AddToCart(cartItem);
     }
 }
