@@ -30,5 +30,16 @@ namespace Blecommerce.Server.Controllers
             }
             return BadRequest(response);
         }
+
+        [HttpPost("login")]
+        public async Task<ActionResult<ServiceResponse<string>>> Login (UserLoginDto model)
+        {
+            var response = await _authService.Login(model);
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+            return BadRequest(response.Message);
+        }
     }
 }
