@@ -24,7 +24,17 @@
                                   @bind-Value="user.ConfirmPassword" For="@(() => user.ConfirmPassword)" InputType="InputType.Password" />
                 </MudCardContent>
                 <MudCardActions>
-                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Register</MudButton>
+                    <MudButton Disabled="@_processing" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">
+                        @if (_processing)
+                        {
+                            <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                            <MudText Class="ms-2">Loading...</MudText>
+                        }
+                        else
+                        {
+                            <MudText>Register</MudText>
+                        }
+                    </MudButton>
                 </MudCardActions>
             </MudCard>
         </MudItem>
@@ -35,17 +45,26 @@
 
     string errorMessage = string.Empty;
 
-    //Snackbar.Add("Reactor meltdown is imminent", Severity.Error))
+    private bool _processing = false;
+
     private async Task OnValidSubmit(EditContext context)
     {
+        _processing = true;
+
         var result = await AuthService.Register(user);
-        if (!result.Success)
+        if (result.Success)
         {
-            Snackbar.Add(result.Message, Severity.Error);
+
+            Snackbar.Add("Succrssfully registered", Severity.Success);
+            user = new UserRegister();
         }
         else
         {
-            Snackbar.Add("Succrssfully registered", Severity.Success);
-            user = new UserRegister();        }
+            Snackbar.Add(result.Message, Severity.Error);
+            _processing = false;
+
+        }
+        _processing = false;
+
     }
 }

@@ -1,6 +1,8 @@
 ﻿@page "/login"
 @inject IAuthService AuthService
 @inject ISnackbar Snackbar
+@inject ILocalStorageService LocalStorage
+@inject NavigationManager NavigationManager
 
 <MudText Class="mb-10" Typo="Typo.h3">
     Login
@@ -22,7 +24,17 @@
                                   @bind-Value="user.Password" For="@(() => user.Password)" InputType="InputType.Password" />
                 </MudCardContent>
                 <MudCardActions>
-                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Register</MudButton>
+                    <MudButton Disabled="@_processing" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">
+                        @if (_processing)
+                        {
+                            <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                            <MudText Class="ms-2">Loading...</MudText>
+                        }
+                        else
+                        {
+                            <MudText>Login</MudText>
+                        }
+                    </MudButton>
                 </MudCardActions>
             </MudCard>
         </MudItem>
@@ -30,23 +42,25 @@
 </EditForm>
 @code {
     UserLoginDto user = new UserLoginDto();
+    private bool _processing = false;
 
     string errorMessage = string.Empty;
 
-    //Snackbar.Add("Reactor meltdown is imminent", Severity.Error))
     private async Task OnValidSubmit(EditContext context)
     {
-        //var result = await AuthService.Register(user);
-        //if (!result.Success)
-        //{
-        //    Snackbar.Add(result.Message, Severity.Error);
-        //}
-        //else
-        //{
-        //    Snackbar.Add($"Welcome Back , {user.Email}", Severity.Success);
-        //    user = new UserLoginDto();
-        //}
+        _processing = true;
 
-        Console.WriteLine("log in");
+        var result = await AuthService.Login(user);
+        if (result.Success)
+        {
+            Snackbar.Add($"Welcome Back , {user.Email}", Severity.Success);
+            await LocalStorage.SetItemAsync("authToken", result.Data);
+            NavigationManager.NavigateTo("/");
+        }
+        else
+        {
+            Snackbar.Add(result.Message, Severity.Error);
+        }
+        _processing = false;
     }
 }
