@@ -42,7 +42,7 @@ namespace Blecommerce.Server.Services.CartService
 
             var cartProducts = await response.Content.ReadFromJsonAsync<ServiceResponse<List<CartProductDto>>>();
 
-            return cartProducts.Data;
+            return cartProducts!.Data!;
         }
 
         public async Task RemoveProductFromCart(int productId, int productTypeId)

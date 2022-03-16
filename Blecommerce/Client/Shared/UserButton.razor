@@ -1,7 +1,25 @@
-﻿<MudMenu Variant="Variant.Outlined" Icon="@Icons.Filled.Person"  Color="Color.Secondary" >
-    <MudMenuItem Link="/register">Register</MudMenuItem>
-    <MudMenuItem Link="/login">Login</MudMenuItem>
+﻿@inject ILocalStorageService LocalStorage
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+
+<MudMenu Variant="Variant.Outlined" Icon="@Icons.Filled.Person" Color="Color.Secondary">
+    <AuthorizeView>
+        <Authorized>
+           <MudButton OnClick="Logout">Logout</MudButton>
+        </Authorized>
+
+        <NotAuthorized>
+            <MudMenuItem Link="/register">Register</MudMenuItem>
+            <MudMenuItem Link="/login">Login</MudMenuItem>
+        </NotAuthorized>
+    </AuthorizeView>
+
 </MudMenu>
 @code {
-
+    private async Task Logout()
+    {
+        await LocalStorage.RemoveItemAsync("authToken");
+        await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        NavigationManager.NavigateTo("/login");
+    }
 }

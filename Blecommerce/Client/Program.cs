@@ -6,6 +6,7 @@ global using Blecommerce.Client.Services.ProductService;
 global using Blecommerce.Client.Services.CategoryService;
 global using Blecommerce.Server.Services.CartService;
 global using Blecommerce.Client.Services.AuthService;
+global using Microsoft.AspNetCore.Components.Authorization;
 
 using Blecommerce.Client;
 using Microsoft.AspNetCore.Components.Web;
@@ -36,5 +37,9 @@ builder.Services.AddMudServices(config =>
     config.SnackbarConfiguration.ShowTransitionDuration = 500;
     config.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
 });
+
+builder.Services.AddOptions();
+builder.Services.AddAuthorizationCore();
+builder.Services.AddScoped<AuthenticationStateProvider,CustomAuthStateProvider>();
 
 await builder.Build().RunAsync();
