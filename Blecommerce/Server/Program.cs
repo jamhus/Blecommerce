@@ -5,6 +5,7 @@ global using Blecommerce.Server.Data;
 global using Blecommerce.Server.Services.ProductService;
 global using Blecommerce.Server.Services.CategoryService;
 global using Blecommerce.Server.Services.CartService;
+global using Blecommerce.Server.Services.AuthService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +24,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IProductService,ProductService>();
 builder.Services.AddScoped<ICategoryService,CategoryService>();
 builder.Services.AddScoped<ICartServiceBE,CartServiceBE>();
+builder.Services.AddScoped<IAuthService,AuthService>();
 
 var app = builder.Build();
 

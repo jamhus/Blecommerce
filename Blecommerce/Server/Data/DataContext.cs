@@ -11,6 +11,7 @@
         public DbSet<Category> Categories { get; set; } = default!;
         public DbSet<ProductVariant> ProductVariants { get; set; } = default!;
         public DbSet<ProductType> ProductTypes { get; set; } = default!;
+        public DbSet<User> Users { get; set; } = default!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
