@@ -1,0 +1,38 @@
+﻿@page "/register"
+
+<MudText Class="mb-10" Typo="Typo.h3">
+    Register
+</MudText>
+
+<EditForm Model="@user" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator />
+    <MudGrid>
+        <MudItem xs="0" md="3">
+            <div></div>
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudCard>
+                <MudCardContent>
+
+                    <MudTextField Label="Email" Class="mt-3"
+                                  @bind-Value="user.Email" For="@(() => user.Email)" />
+                    <MudTextField Label="Password" HelperText="Choose a strong password" Class="mt-3"
+                                  @bind-Value="user.Password" For="@(() => user.Password)" InputType="InputType.Password" />
+                    <MudTextField Label="Password" HelperText="Repeat the password" Class="mt-3"
+                                  @bind-Value="user.ConfirmPassword" For="@(() => user.ConfirmPassword)" InputType="InputType.Password" />
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Register</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+</EditForm>
+@code {
+    UserRegister user = new UserRegister();
+
+    private void OnValidSubmit(EditContext context)
+    {
+        Console.WriteLine($"register with {user.Email}");
+    }
+}
