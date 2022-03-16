@@ -1,0 +1,52 @@
+﻿@page "/login"
+@inject IAuthService AuthService
+@inject ISnackbar Snackbar
+
+<MudText Class="mb-10" Typo="Typo.h3">
+    Login
+</MudText>
+
+<EditForm Model="@user" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator />
+    <MudGrid>
+        <MudItem xs="0" md="3">
+            <div></div>
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudCard>
+                <MudCardContent>
+
+                    <MudTextField Label="Email" Class="mt-3"
+                                  @bind-Value="user.Email" For="@(() => user.Email)" />
+                    <MudTextField Label="Password" HelperText="Choose a strong password" Class="mt-3"
+                                  @bind-Value="user.Password" For="@(() => user.Password)" InputType="InputType.Password" />
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Register</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+</EditForm>
+@code {
+    UserLoginDto user = new UserLoginDto();
+
+    string errorMessage = string.Empty;
+
+    //Snackbar.Add("Reactor meltdown is imminent", Severity.Error))
+    private async Task OnValidSubmit(EditContext context)
+    {
+        //var result = await AuthService.Register(user);
+        //if (!result.Success)
+        //{
+        //    Snackbar.Add(result.Message, Severity.Error);
+        //}
+        //else
+        //{
+        //    Snackbar.Add($"Welcome Back , {user.Email}", Severity.Success);
+        //    user = new UserLoginDto();
+        //}
+
+        Console.WriteLine("log in");
+    }
+}
