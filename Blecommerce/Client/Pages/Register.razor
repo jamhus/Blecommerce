@@ -1,4 +1,6 @@
 ﻿@page "/register"
+@inject IAuthService AuthService
+@inject ISnackbar Snackbar
 
 <MudText Class="mb-10" Typo="Typo.h3">
     Register
@@ -31,8 +33,19 @@
 @code {
     UserRegister user = new UserRegister();
 
-    private void OnValidSubmit(EditContext context)
+    string errorMessage = string.Empty;
+
+    //Snackbar.Add("Reactor meltdown is imminent", Severity.Error))
+    private async Task OnValidSubmit(EditContext context)
     {
-        Console.WriteLine($"register with {user.Email}");
+        var result = await AuthService.Register(user);
+        if (!result.Success)
+        {
+            Snackbar.Add(result.Message, Severity.Error);
+        }
+        else
+        {
+            Snackbar.Add("Succrssfully registered", Severity.Success);
+            user = new UserRegister();        }
     }
 }
