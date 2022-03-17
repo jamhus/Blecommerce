@@ -1,6 +1,7 @@
 ﻿@inject ILocalStorageService LocalStorage
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
+@inject ICartService CartService
 
 <MudMenu Variant="Variant.Outlined" Icon="@Icons.Filled.Person" Color="Color.Secondary">
     <AuthorizeView>
@@ -28,6 +29,7 @@
     private async Task Logout()
     {
         await LocalStorage.RemoveItemAsync("authToken");
+        await CartService.GetCartItemsCount();
         await AuthenticationStateProvider.GetAuthenticationStateAsync();
         NavigationManager.NavigateTo("/login");
     }

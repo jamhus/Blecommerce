@@ -1,13 +1,25 @@
-﻿namespace Blecommerce.Server.Services.CartService
+﻿using System.Security.Claims;
+
+namespace Blecommerce.Server.Services.CartService
 {
     public class CartServiceBE : ICartServiceBE
     {
         private readonly DataContext _context;
+        private readonly IHttpContextAccessor _accessor;
 
-        public CartServiceBE(DataContext context)
+        public CartServiceBE(DataContext context, IHttpContextAccessor accessor)
         {
             _context = context;
+            _accessor = accessor;
         }
+
+        public async Task<ServiceResponse<int>> GetCartItemsCount()
+        {
+            var count = (await _context.CartItems.Where(ci => ci.UserId == GetUserId()).ToListAsync()).Count;
+            return new ServiceResponse<int> { Data = count };
+
+        }
+
         public async Task<ServiceResponse<List<CartProductDto>>> GetCartProducts(List<CartItem> cartItems)
         {
             var result = new ServiceResponse<List<CartProductDto>>
@@ -54,8 +66,10 @@
             return result;
         }
 
-        public async Task<ServiceResponse<List<CartProductDto>>> StoreCartItems(List<CartItem> cartItems, int userId)
+        public async Task<ServiceResponse<List<CartProductDto>>> StoreCartItems(List<CartItem> cartItems)
+
         {
+            int userId = GetUserId();
             cartItems.ForEach(cartItem => cartItem.UserId = userId);
 
             _context.CartItems.AddRange(cartItems);
@@ -64,5 +78,7 @@
             var newItems = await _context.CartItems.Where(ci => ci.UserId == userId).ToListAsync();
             return await GetCartProducts(newItems);
         }
+
+        private int GetUserId() => int.Parse(_accessor.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier)); 
     }
 }

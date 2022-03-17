@@ -9,8 +9,8 @@
 @code {
     private int GetCurrentItemsCount()
     {
-        var cart = LocalStorage.GetItem<List<CartItem>>("cart");
-        return cart != null ? cart.Sum(p=>p.Quantity) : 0;
+        var count = LocalStorage.GetItem<int>("cartItemsCount");
+        return count;
     }
 
     protected override void OnInitialized()

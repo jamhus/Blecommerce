@@ -18,7 +18,7 @@ namespace Blecommerce.Server.Services.CartService
 
         public async Task AddToCart(CartItem item)
         {
-            if((await _auth.GetAuthenticationStateAsync()).User.Identity!.IsAuthenticated)
+            if(await isAuthenticated())
             {
                 Console.WriteLine("User authenticated");
             }
@@ -36,13 +36,31 @@ namespace Blecommerce.Server.Services.CartService
                 sameItem.Quantity += item.Quantity;
             }
             await _localStorage.SetItemAsync("cart", cart);
-            OnChange.Invoke();
+            await GetCartItemsCount();
         }
 
         public async Task<List<CartItem>> GetCartItems()
         {
+            await GetCartItemsCount();
             var cart = await FetchOrCreateCart();
               return cart;
+        }
+
+        public async Task GetCartItemsCount()
+        {
+            if (await isAuthenticated())
+            {
+                var result = await _http.GetFromJsonAsync<ServiceResponse<int>>("api/cart/count");
+                var count = result!.Data;
+
+                await _localStorage.SetItemAsync<int>("cartItemsCount", count);
+            }else
+            {
+                var cart = await _localStorage.GetItemAsync<List<CartItem>>("cart");
+                await _localStorage.SetItemAsync<int>("cartItemsCount", cart!= null ? cart.Count : 0);
+            }
+
+            OnChange.Invoke();
         }
 
         public async Task<List<CartProductDto>> GetCartProducts()
@@ -68,7 +86,7 @@ namespace Blecommerce.Server.Services.CartService
             {
                 cart.Remove(cartItem);
                 await _localStorage.SetItemAsync("cart", cart);
-                OnChange.Invoke();
+                await GetCartItemsCount();
             }
         }
 
@@ -109,6 +127,11 @@ namespace Blecommerce.Server.Services.CartService
                 cart = new List<CartItem>();
             }
             return cart;
+        }
+
+        private async Task<bool> isAuthenticated()
+        {
+            return (await _auth.GetAuthenticationStateAsync()).User.Identity!.IsAuthenticated;
         }
     }
 }
