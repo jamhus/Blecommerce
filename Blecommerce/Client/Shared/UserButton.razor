@@ -10,12 +10,20 @@
 
         <NotAuthorized>
             <MudMenuItem Link="/register">Register</MudMenuItem>
-            <MudMenuItem Link="/login">Login</MudMenuItem>
+            <MudMenuItem OnClick="()=> NavLogin(NavigationManager.ToBaseRelativePath(NavigationManager.Uri))">
+                Login
+            </MudMenuItem>
         </NotAuthorized>
     </AuthorizeView>
 
 </MudMenu>
 @code {
+
+    private void NavLogin (string url)
+    {
+        NavigationManager.NavigateTo($"login?returnUrl={url}");
+    }
+
     private async Task Logout()
     {
         await LocalStorage.RemoveItemAsync("authToken");
