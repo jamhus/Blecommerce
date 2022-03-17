@@ -1,0 +1,12 @@
+﻿@page "/profile"
+@attribute [Authorize]
+
+<AuthorizeView>
+    <MudText Typo="Typo.h2">
+        Hi @context.User.Identity.Name
+    </MudText>
+</AuthorizeView>
+
+@code {
+
+}

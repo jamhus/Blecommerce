@@ -5,7 +5,8 @@
 <MudMenu Variant="Variant.Outlined" Icon="@Icons.Filled.Person" Color="Color.Secondary">
     <AuthorizeView>
         <Authorized>
-           <MudButton OnClick="Logout">Logout</MudButton>
+           <MudMenuItem Link="Profile">Profile</MudMenuItem>
+           <MudMenuItem OnClick="Logout">Logout</MudMenuItem>
         </Authorized>
 
         <NotAuthorized>
