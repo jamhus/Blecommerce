@@ -12,12 +12,15 @@
         public DbSet<ProductVariant> ProductVariants { get; set; } = default!;
         public DbSet<ProductType> ProductTypes { get; set; } = default!;
         public DbSet<User> Users { get; set; } = default!;
+        public DbSet<CartItem> CartItems { get; set; } = default!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ProductVariant>()
-                .HasKey(x => new { x.ProductId ,x.ProductTypeId});
-
+                .HasKey(p => new { p.ProductId ,p.ProductTypeId});
+            
+            modelBuilder.Entity<CartItem>()
+                .HasKey(ci => new { ci.UserId ,ci.ProductId ,ci.ProductTypeId});
 
             modelBuilder.Entity<ProductType>().HasData(
                     new ProductType { Id = 1, Name = "Default" },
