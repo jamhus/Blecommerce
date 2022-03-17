@@ -3,6 +3,7 @@
 @inject IAuthService AuthService
 @inject ISnackbar Snackbar
 @inject ILocalStorageService LocalStorage
+@inject ICartService CartService
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
 <MudText Class="mb-10" Typo="Typo.h3">
@@ -69,6 +70,7 @@
             Snackbar.Add($"Welcome Back , {user.Email}", Severity.Success);
             await LocalStorage.SetItemAsync("authToken", result.Data);
             await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            await CartService.StoreCartItems(true);
             NavigationManager.NavigateTo(returnUrl);
         }
         else

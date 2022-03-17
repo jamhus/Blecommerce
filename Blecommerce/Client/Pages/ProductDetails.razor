@@ -73,8 +73,8 @@ else
 
     private ProductVariant GetSelectedVariant()
     {
-        var variant = product.Variants.FirstOrDefault(v => v.ProductTypeId == currentTypeId);
-        return variant;
+        var variant = product!.Variants.FirstOrDefault(v => v.ProductTypeId == currentTypeId);
+        return variant!;
     }
 
     private async Task AddToCart()

@@ -6,16 +6,26 @@ namespace Blecommerce.Server.Services.CartService
     {
         private readonly ILocalStorageService _localStorage;
         private readonly HttpClient _http;
+        private readonly AuthenticationStateProvider _auth;
 
-        public CartService(ILocalStorageService localStorage, HttpClient http)
+        public CartService(ILocalStorageService localStorage, HttpClient http, AuthenticationStateProvider auth)
         {
             _localStorage = localStorage;
             _http = http;
+            _auth = auth;
         }
         public event Action OnChange = default!;
 
         public async Task AddToCart(CartItem item)
         {
+            if((await _auth.GetAuthenticationStateAsync()).User.Identity!.IsAuthenticated)
+            {
+                Console.WriteLine("User authenticated");
+            }
+            else
+            {
+                Console.WriteLine("not");
+            }
             var cart = await FetchOrCreateCart();
             var sameItem = cart.Find(i => i.ProductId == item.ProductId && i.ProductTypeId == item.ProductTypeId);
             if (sameItem == null){
@@ -60,6 +70,18 @@ namespace Blecommerce.Server.Services.CartService
                 await _localStorage.SetItemAsync("cart", cart);
                 OnChange.Invoke();
             }
+        }
+
+        public async Task StoreCartItems(bool emptyLocal)
+        {
+            var cart = await _localStorage.GetItemAsync<List<CartItem>>("cart");
+            if (cart == null)
+            {
+                return;
+            }
+
+            await _http.PostAsJsonAsync("api/cart", cart);
+            if (emptyLocal) await _localStorage.RemoveItemAsync("cart");
         }
 
         public async Task UpdateQuantity(CartProductDto cartProduct)
