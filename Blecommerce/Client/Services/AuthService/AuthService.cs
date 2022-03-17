@@ -9,6 +9,12 @@
             _http = http;
         }
 
+        public async Task<ServiceResponse<bool>> ChangePassword(ChangePassword model)
+        {
+            var result = await _http.PostAsJsonAsync("api/auth/change-password", model.Password);
+            return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
+        }
+
         public async Task<ServiceResponse<string>> Login(UserLoginDto user)
         {
             var result = await _http.PostAsJsonAsync("api/auth/login", user);

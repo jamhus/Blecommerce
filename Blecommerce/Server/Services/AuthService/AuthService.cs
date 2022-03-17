@@ -108,5 +108,22 @@ namespace Blecommerce.Server.Services.AuthService
             var jwt = new JwtSecurityTokenHandler().WriteToken(token);
             return jwt;
         }
+
+        public async Task<ServiceResponse<bool>> ChangePassword(int userId, string password)
+        {
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null)
+            {
+                return new ServiceResponse<bool> { Success = false, Message = "User not found" };
+            }
+
+            CreatePasswordHash(password , out byte [] hash, out byte [] salt);
+            user.PasswordSalt = salt;
+            user.PasswordHash = hash;
+
+            await _context.SaveChangesAsync();
+
+            return new ServiceResponse<bool> { Data = true, Message = "Password has been updated" };
+        }
     }
 }

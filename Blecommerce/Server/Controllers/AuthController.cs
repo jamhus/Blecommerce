@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Blecommerce.Server.Controllers
 {
@@ -35,6 +37,13 @@ namespace Blecommerce.Server.Controllers
         public async Task<ActionResult<ServiceResponse<string>>> Login (UserLoginDto model)
         {
             return await _authService.Login(model); 
+        }
+
+        [HttpPost("change-password"),Authorize]
+        public async Task<ActionResult<ServiceResponse<bool>>> ChangePassword([FromBody] string newPassword)
+        {
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            return await _authService.ChangePassword(userId, newPassword);
         }
     }
 }

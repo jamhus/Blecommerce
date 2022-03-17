@@ -1,12 +1,74 @@
 ﻿@page "/profile"
+@inject IAuthService AuthService
+@inject ISnackbar Snackbar
 @attribute [Authorize]
 
 <AuthorizeView>
-    <MudText Typo="Typo.h2">
+    <MudText Class="mb-10" Typo="Typo.h2">
         Hi @context.User.Identity.Name
     </MudText>
 </AuthorizeView>
 
-@code {
+<MudText Class="mb-10" Typo="Typo.h3">
+    Change Password
+</MudText>
 
+<EditForm Model="@user" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator />
+    <MudGrid>
+        <MudItem xs="0" md="3">
+            <div></div>
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudCard>
+                <MudCardContent>
+                    <MudTextField Label="Password" HelperText="Choose a strong password" Class="mt-3"
+                                  @bind-Value="user.Password" For="@(() => user.Password)" InputType="InputType.Password" />
+                    <MudTextField Label="Password" HelperText="Repeat the password" Class="mt-3"
+                                  @bind-Value="user.ConfirmPassword" For="@(() => user.ConfirmPassword)" InputType="InputType.Password" />
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton Disabled="@_processing" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">
+                        @if (_processing)
+                        {
+                            <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                            <MudText Class="ms-2">Loading...</MudText>
+                        }
+                        else
+                        {
+                            <MudText>Save</MudText>
+                        }
+                    </MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+</EditForm>
+@code {
+    ChangePassword user = new ChangePassword();
+
+    string errorMessage = string.Empty;
+
+    private bool _processing = false;
+
+    private async Task OnValidSubmit(EditContext context)
+    {
+        _processing = true;
+
+        var result = await AuthService.ChangePassword(user);
+        if (result.Success)
+        {
+
+            Snackbar.Add("Succrssfully changed password", Severity.Success);
+            user = new ChangePassword();
+        }
+        else
+        {
+            Snackbar.Add(result.Message, Severity.Error);
+            _processing = false;
+
+        }
+        _processing = false;
+
+    }
 }
