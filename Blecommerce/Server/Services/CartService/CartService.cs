@@ -97,6 +97,25 @@ namespace Blecommerce.Server.Services.CartService
             return await GetCartProducts(items);
         }
 
+        public async Task<ServiceResponse<bool>> RemoveFromCart(int productId, int productTypeId)
+        {
+            var item = await _context.CartItems.FirstOrDefaultAsync(
+                x => x.ProductId == productId
+                && x.ProductTypeId == productTypeId
+                && x.UserId == GetUserId());
+
+            if (item == null)
+            {
+                return new ServiceResponse<bool> { Data = false, Message = "Cart item does not exist", Success = false };
+            }
+
+            _context.CartItems.Remove(item);
+
+            await _context.SaveChangesAsync();
+
+            return new ServiceResponse<bool> { Data = true };
+        }
+
         public async Task<ServiceResponse<List<CartProductDto>>> StoreCartItems(List<CartItem> cartItems)
 
         {

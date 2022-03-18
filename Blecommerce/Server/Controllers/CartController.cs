@@ -48,12 +48,20 @@ namespace Blecommerce.Server.Controllers
             var result = await _cartService.GetCartItemsCount();
             return Ok(result);
         }
+
         [HttpGet]
         public async Task<ActionResult<ServiceResponse<List<CartProductDto>>>> GetDbCartProducts()
         {
             var result = await _cartService.GetDbCartProducts();
             return Ok(result);
 
+        }
+
+        [HttpDelete("{productId}/{productTypeId}")]
+        public async Task<ActionResult<ServiceResponse<bool>>> DeleteItem(int productId, int productTypeId)
+        {
+            var result = await _cartService.RemoveFromCart(productId, productTypeId);
+            return Ok(result);
         }
     }
 }
