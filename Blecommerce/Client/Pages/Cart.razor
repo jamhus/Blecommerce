@@ -44,7 +44,7 @@ else
         </RowTemplate>
     </MudTable>
     <MudText Typo="Typo.h5">
-        Total (@cartProducts.Count): $@cartProducts.Sum(p => p.Price * p.Quantity)
+        Total (@cartProducts.Sum(i=>i.Quantity)): $@cartProducts.Sum(p => p.Price * p.Quantity)
     </MudText>
 }
 

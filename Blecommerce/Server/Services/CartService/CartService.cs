@@ -13,9 +13,34 @@ namespace Blecommerce.Server.Services.CartService
             _accessor = accessor;
         }
 
+        public async Task<ServiceResponse<bool>> AddToCart(CartItem cartItem)
+        {
+            cartItem.UserId = GetUserId();
+
+            var sameItem = await _context.CartItems.FirstOrDefaultAsync(
+                x => x.ProductId == cartItem.ProductId
+                && x.ProductTypeId == cartItem.ProductTypeId
+                && x.UserId == cartItem.UserId);
+
+            if(sameItem == null)
+            {
+                _context.CartItems.Add(cartItem);
+            }
+            else
+            {
+                sameItem.Quantity += cartItem.Quantity;
+            }
+
+            await _context.SaveChangesAsync();
+
+            return new ServiceResponse<bool> { Data = true };
+        }
+
         public async Task<ServiceResponse<int>> GetCartItemsCount()
         {
-            var count = (await _context.CartItems.Where(ci => ci.UserId == GetUserId()).ToListAsync()).Count;
+            var count = (await _context.CartItems
+                .Where(ci => ci.UserId == GetUserId()).ToListAsync())
+                .Sum(item => item.Quantity);
             return new ServiceResponse<int> { Data = count };
 
         }
@@ -82,6 +107,22 @@ namespace Blecommerce.Server.Services.CartService
 
             await _context.SaveChangesAsync();
             return await GetDbCartProducts();
+        }
+
+        public async Task<ServiceResponse<bool>> UpdateQuantity(CartItem cartItem)
+        {
+            var item = await _context.CartItems.FirstOrDefaultAsync(
+                x => x.ProductId == cartItem.ProductId
+                && x.ProductTypeId == cartItem.ProductTypeId
+                && x.UserId == GetUserId());
+
+            if (item == null)
+            {
+                return new ServiceResponse<bool> { Data = false, Message = "Cart item does not exist", Success = false };
+            }
+            item.Quantity = cartItem.Quantity;
+            await _context.SaveChangesAsync();
+            return new ServiceResponse<bool> { Data = true };
         }
 
         private int GetUserId() => int.Parse(_accessor.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier)); 
