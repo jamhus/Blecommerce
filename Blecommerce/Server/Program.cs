@@ -6,6 +6,7 @@ global using Blecommerce.Server.Services.ProductService;
 global using Blecommerce.Server.Services.CategoryService;
 global using Blecommerce.Server.Services.CartService;
 global using Blecommerce.Server.Services.AuthService;
+global using Blecommerce.Server.Services.OrderService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
@@ -27,6 +28,7 @@ builder.Services.AddScoped<IProductService,ProductService>();
 builder.Services.AddScoped<ICategoryService,CategoryService>();
 builder.Services.AddScoped<ICartServiceBE,CartServiceBE>();
 builder.Services.AddScoped<IAuthService,AuthService>();
+builder.Services.AddScoped<IOrderService,OrderService>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
