@@ -13,6 +13,8 @@
         public DbSet<ProductType> ProductTypes { get; set; } = default!;
         public DbSet<User> Users { get; set; } = default!;
         public DbSet<CartItem> CartItems { get; set; } = default!;
+        public DbSet<Order> Orders { get; set; } = default!;
+        public DbSet<OrderItem> OrderItems { get; set; } = default!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -21,6 +23,9 @@
             
             modelBuilder.Entity<CartItem>()
                 .HasKey(ci => new { ci.UserId ,ci.ProductId ,ci.ProductTypeId});
+            
+            modelBuilder.Entity<OrderItem>()
+                .HasKey(oi => new { oi.OrderId ,oi.ProductId ,oi.ProductTypeId});
 
             modelBuilder.Entity<ProductType>().HasData(
                     new ProductType { Id = 1, Name = "Default" },
