@@ -66,6 +66,12 @@ namespace Blecommerce.Server.Services.CartService
             return result;
         }
 
+        public async Task<ServiceResponse<List<CartProductDto>>> GetDbCartProducts()
+        {
+            var items = await _context.CartItems.Where(ci=>ci.UserId == GetUserId()).ToListAsync();
+            return await GetCartProducts(items);
+        }
+
         public async Task<ServiceResponse<List<CartProductDto>>> StoreCartItems(List<CartItem> cartItems)
 
         {
@@ -75,8 +81,7 @@ namespace Blecommerce.Server.Services.CartService
             _context.CartItems.AddRange(cartItems);
 
             await _context.SaveChangesAsync();
-            var newItems = await _context.CartItems.Where(ci => ci.UserId == userId).ToListAsync();
-            return await GetCartProducts(newItems);
+            return await GetDbCartProducts();
         }
 
         private int GetUserId() => int.Parse(_accessor.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier)); 

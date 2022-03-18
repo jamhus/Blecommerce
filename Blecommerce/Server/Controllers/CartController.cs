@@ -33,5 +33,10 @@ namespace Blecommerce.Server.Controllers
         {
             return await _cartService.GetCartItemsCount();
         }
+        [HttpGet]
+        public async Task<ActionResult<ServiceResponse<List<CartProductDto>>>> GetDbCartProducts()
+        {
+            return await _cartService.GetDbCartProducts();
+        }
     }
 }
