@@ -1,5 +1,6 @@
 ﻿@page "/cart"
 @inject ICartService CartService
+@inject IOrderService OrderService
 @implements IDisposable
 
 <MudText Class="mb-10" Typo="Typo.h3">
@@ -43,9 +44,35 @@ else
             </MudTd>
         </RowTemplate>
     </MudTable>
-    <MudText Typo="Typo.h5">
-        Total (@cartProducts.Sum(i=>i.Quantity)): $@cartProducts.Sum(p => p.Price * p.Quantity)
-    </MudText>
+
+     <MudGrid>
+        <MudItem xs="0" md="9">
+            <div></div>
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MudCard>
+        <MudList Clickable="true">
+            <MudListItem Icon="@Icons.Filled.AttachMoney">
+                <MudText Typo="Typo.subtitle1">
+                    Total (@cartProducts.Sum(i=>i.Quantity)): $@cartProducts.Sum(p => p.Price * p.Quantity)
+                </MudText>
+            </MudListItem>
+            <MudDivider />
+
+            <MudListItem Icon="@Icons.Material.Filled.Send">
+                <MudButton OnClick="AddOrder" FullWidth="true" Variant="Variant.Outlined" Color="Color.Secondary">
+                    Order
+                </MudButton>
+            </MudListItem>
+
+        </MudList>
+    </MudCard>
+        </MudItem>
+    </MudGrid>
+
+    
+
+
 }
 
 @code {
@@ -85,6 +112,11 @@ else
             product.Quantity = 1;
         }
         await CartService.UpdateQuantity(product);
+    }
+
+    private async Task AddOrder ()
+    {
+        await OrderService.AddOrder();
     }
 
     public void Dispose()
