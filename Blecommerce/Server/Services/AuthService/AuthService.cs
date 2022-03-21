@@ -9,11 +9,13 @@ namespace Blecommerce.Server.Services.AuthService
     {
         private readonly DataContext _context;
         private readonly IConfiguration _config;
+        private readonly IHttpContextAccessor _accessor;
 
-        public AuthService(DataContext context, IConfiguration config)
+        public AuthService(DataContext context, IConfiguration config, IHttpContextAccessor accessor)
         {
             _context = context;
             _config = config;
+            _accessor = accessor;
         }
 
         public async Task<ServiceResponse<string>> Login(UserLoginDto model)
@@ -125,5 +127,7 @@ namespace Blecommerce.Server.Services.AuthService
 
             return new ServiceResponse<bool> { Data = true, Message = "Password has been updated" };
         }
+
+        public int GetUserId() => int.Parse(_accessor.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier));
     }
 }

@@ -5,17 +5,17 @@ namespace Blecommerce.Server.Services.CartService
     public class CartService : ICartService
     {
         private readonly DataContext _context;
-        private readonly IHttpContextAccessor _accessor;
+        private readonly IAuthService _authService;
 
-        public CartService(DataContext context, IHttpContextAccessor accessor)
+        public CartService(DataContext context, IAuthService authService)
         {
             _context = context;
-            _accessor = accessor;
+            _authService = authService;
         }
 
         public async Task<ServiceResponse<bool>> AddToCart(CartItem cartItem)
         {
-            cartItem.UserId = GetUserId();
+            cartItem.UserId = _authService.GetUserId();
 
             var sameItem = await _context.CartItems.FirstOrDefaultAsync(
                 x => x.ProductId == cartItem.ProductId
@@ -39,7 +39,7 @@ namespace Blecommerce.Server.Services.CartService
         public async Task<ServiceResponse<int>> GetCartItemsCount()
         {
             var count = (await _context.CartItems
-                .Where(ci => ci.UserId == GetUserId()).ToListAsync())
+                .Where(ci => ci.UserId == _authService.GetUserId()).ToListAsync())
                 .Sum(item => item.Quantity);
             return new ServiceResponse<int> { Data = count };
 
@@ -93,7 +93,7 @@ namespace Blecommerce.Server.Services.CartService
 
         public async Task<ServiceResponse<List<CartProductDto>>> GetDbCartProducts()
         {
-            var items = await _context.CartItems.Where(ci=>ci.UserId == GetUserId()).ToListAsync();
+            var items = await _context.CartItems.Where(ci=>ci.UserId == _authService.GetUserId()).ToListAsync();
             return await GetCartProducts(items);
         }
 
@@ -102,7 +102,7 @@ namespace Blecommerce.Server.Services.CartService
             var item = await _context.CartItems.FirstOrDefaultAsync(
                 x => x.ProductId == productId
                 && x.ProductTypeId == productTypeId
-                && x.UserId == GetUserId());
+                && x.UserId == _authService.GetUserId());
 
             if (item == null)
             {
@@ -119,7 +119,7 @@ namespace Blecommerce.Server.Services.CartService
         public async Task<ServiceResponse<List<CartProductDto>>> StoreCartItems(List<CartItem> cartItems)
 
         {
-            int userId = GetUserId();
+            int userId = _authService.GetUserId();
             cartItems.ForEach(cartItem => cartItem.UserId = userId);
 
             _context.CartItems.AddRange(cartItems);
@@ -133,7 +133,7 @@ namespace Blecommerce.Server.Services.CartService
             var item = await _context.CartItems.FirstOrDefaultAsync(
                 x => x.ProductId == cartItem.ProductId
                 && x.ProductTypeId == cartItem.ProductTypeId
-                && x.UserId == GetUserId());
+                && x.UserId == _authService.GetUserId());
 
             if (item == null)
             {
@@ -143,7 +143,5 @@ namespace Blecommerce.Server.Services.CartService
             await _context.SaveChangesAsync();
             return new ServiceResponse<bool> { Data = true };
         }
-
-        private int GetUserId() => int.Parse(_accessor.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier)); 
     }
 }
