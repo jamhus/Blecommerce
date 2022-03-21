@@ -1,0 +1,61 @@
+﻿@page "/orders/{orderId:int}"
+@inject IOrderService OrderService
+
+<MudLink Href="orders">Back</MudLink>
+
+<MudText Class="my-10" Typo="Typo.h3">
+    Order details
+</MudText>
+
+@if (order == null)
+{
+    <MudText Typo="Typo.h5">
+        Loading your order ...
+    </MudText>
+}
+
+else
+{
+
+    <MudText Class="mb-10" Typo="Typo.h5">
+        Order from @order.OrderDate
+    </MudText>
+
+    foreach (var product in order.Products)
+    {
+        var link = $"/product/{product.ProductId}";
+        <MudPaper>
+            <MudCard Class="d-flex flex-lg-row mb-10">
+                <MudImage ObjectPosition="@ObjectPosition.Center" Src=@product.ImageUrl Width="180" Height="180" Alt=@product.Title Elevation="25" Class="rounded-lg details-img-margin" />
+                <MudCardContent Class="d-flex flex-column justify-content-around w-sm-100">
+                    <MudLink Class="mb-5" Href="@link" Typo="Typo.h5">@product.Title</MudLink>
+                    <MudText Typo="Typo.subtitle1" Class="mb-5">
+                        @product.ProductType
+                    </MudText>
+                    <MudText Typo="Typo.subtitle1" Class="mb-5">
+                        Quantity: @product.Quantity
+                    </MudText>
+                    <MudText Typo="Typo.subtitle1" Class="mb-5">
+                        $@product.TotalPrice
+                    </MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudPaper>
+
+    }
+    <MudText Typo="Typo.h5">
+        Total: $@order.TotalPrice
+    </MudText>
+}
+
+@code {
+    OrderDetailsDto order = null;
+
+    [Parameter]
+    public int orderId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        order = await OrderService.GetOrderDetails(orderId);
+    }
+}

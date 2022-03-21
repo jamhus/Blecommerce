@@ -25,9 +25,9 @@ else
         var link = $"orders/{order.Id}";
         <MudPaper>
             <MudCard Class="d-flex flex-lg-row mb-10">
-                <MudImage ObjectPosition="@ObjectPosition.Center" Src=@order.ImageUrl Width="250" Height="250" Alt=@order.Product Elevation="25" Class="rounded-lg details-img-margin" />
+                <MudImage ObjectPosition="@ObjectPosition.Center" Src=@order.ImageUrl Width="180" Height="180" Alt=@order.Product Elevation="25" Class="rounded-lg details-img-margin" />
                 <MudCardContent Class="d-flex flex-column justify-content-around w-sm-100">
-                    <MudText Class="mb-5" Typo="Typo.h4">@order.Product</MudText>
+                    <MudText Class="mb-5" Typo="Typo.h5">@order.Product</MudText>
                     <MudText Class="mb-5">
                         @order.OrderDate
                     </MudText>

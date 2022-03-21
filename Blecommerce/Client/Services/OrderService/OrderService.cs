@@ -29,6 +29,12 @@ namespace Blecommerce.Client.Services.OrderService
             }
         }
 
+        public async Task<OrderDetailsDto> GetOrderDetails(int orderId)
+        {
+            var result = await _http.GetFromJsonAsync<ServiceResponse<OrderDetailsDto>>($"api/order/{orderId}");
+            return result!.Data!;
+        }
+
         public async Task<List<OrderOverViewDto>> GetOrders()
         {
             var result = await _http.GetFromJsonAsync<ServiceResponse<List<OrderOverViewDto>>>("api/order");
