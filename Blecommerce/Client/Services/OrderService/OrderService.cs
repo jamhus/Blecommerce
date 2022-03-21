@@ -5,11 +5,11 @@ namespace Blecommerce.Client.Services.OrderService
     public class OrderService : IOrderService
     {
         private readonly HttpClient _http;
-        private readonly AuthenticationStateProvider _auth;
+        private readonly IAuthService _auth;
         private readonly NavigationManager _navigation;
 
         public OrderService(HttpClient http ,
-            AuthenticationStateProvider auth,
+            IAuthService auth,
             NavigationManager navigation
             )
         {
@@ -19,7 +19,7 @@ namespace Blecommerce.Client.Services.OrderService
         }
         public async Task AddOrder()
         {
-            if (await isAuthenticated ())
+            if (await _auth.IsAuthenticated ())
             {
                 await _http.PostAsync("api/order", null);
 
@@ -39,11 +39,6 @@ namespace Blecommerce.Client.Services.OrderService
         {
             var result = await _http.GetFromJsonAsync<ServiceResponse<List<OrderOverViewDto>>>("api/order");
             return result!.Data!;
-        }
-
-        private async Task<bool> isAuthenticated()
-        {
-            return (await _auth.GetAuthenticationStateAsync()).User.Identity!.IsAuthenticated;
         }
     }
 }

@@ -10,6 +10,6 @@ namespace Blecommerce.Shared.DTOS
     {
         public DateTime OrderDate { get; set; }
         public decimal TotalPrice { get; set; }
-        public List<OrderDetailsProductDto> Products { get; set; }
+        public List<OrderDetailsProductDto> Products { get; set; } = default!;
     }
 }

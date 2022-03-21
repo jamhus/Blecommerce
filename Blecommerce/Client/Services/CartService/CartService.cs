@@ -6,9 +6,9 @@ namespace Blecommerce.Client.Services.CartService
     {
         private readonly ILocalStorageService _localStorage;
         private readonly HttpClient _http;
-        private readonly AuthenticationStateProvider _auth;
+        private readonly IAuthService _auth;
 
-        public CartService(ILocalStorageService localStorage, HttpClient http, AuthenticationStateProvider auth)
+        public CartService(ILocalStorageService localStorage, HttpClient http, IAuthService auth)
         {
             _localStorage = localStorage;
             _http = http;
@@ -18,7 +18,7 @@ namespace Blecommerce.Client.Services.CartService
 
         public async Task AddToCart(CartItem item)
         {
-            if (await isAuthenticated())
+            if (await _auth.IsAuthenticated())
             {
                 await _http.PostAsJsonAsync("api/cart/add",item);
             }
@@ -43,7 +43,7 @@ namespace Blecommerce.Client.Services.CartService
 
         public async Task GetCartItemsCount()
         {
-            if (await isAuthenticated())
+            if (await _auth.IsAuthenticated())
             {
                 var result = await _http.GetFromJsonAsync<ServiceResponse<int>>("api/cart/count");
                 var count = result!.Data;
@@ -61,7 +61,7 @@ namespace Blecommerce.Client.Services.CartService
 
         public async Task<List<CartProductDto>> GetCartProducts()
         {
-            if (await isAuthenticated())
+            if (await _auth.IsAuthenticated())
             {
                 var response = await _http.GetFromJsonAsync<ServiceResponse<List<CartProductDto>>>("api/cart");
                 return response!.Data!;
@@ -81,7 +81,7 @@ namespace Blecommerce.Client.Services.CartService
 
         public async Task RemoveProductFromCart(int productId, int productTypeId)
         {
-            if (await isAuthenticated())
+            if (await _auth.IsAuthenticated())
             {
                 var payload = new CartItem
                 {
@@ -123,7 +123,7 @@ namespace Blecommerce.Client.Services.CartService
 
         public async Task UpdateQuantity(CartProductDto cartProduct)
         {
-            if (await isAuthenticated())
+            if (await _auth.IsAuthenticated())
             {
                 var payload = new CartItem
                 {
@@ -160,11 +160,6 @@ namespace Blecommerce.Client.Services.CartService
                 cart = new List<CartItem>();
             }
             return cart;
-        }
-
-        private async Task<bool> isAuthenticated()
-        {
-            return (await _auth.GetAuthenticationStateAsync()).User.Identity!.IsAuthenticated;
         }
     }
 }
