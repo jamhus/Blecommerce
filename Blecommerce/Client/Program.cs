@@ -4,9 +4,9 @@ global using Blecommerce.Shared.DTOS;
 global using System.Net.Http.Json;
 global using Blecommerce.Client.Services.ProductService;
 global using Blecommerce.Client.Services.CategoryService;
-global using Blecommerce.Server.Services.CartService;
 global using Blecommerce.Client.Services.AuthService;
 global using Microsoft.AspNetCore.Components.Authorization;
+global using Blecommerce.Client.Services.OrderService;
 
 using Blecommerce.Client;
 using Microsoft.AspNetCore.Components.Web;
@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MudBlazor.Services;
 using Blazored.LocalStorage;
 using MudBlazor;
+using Blecommerce.Client.Services.CartService;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -25,6 +26,7 @@ builder.Services.AddScoped<IProductService,ProductService>();
 builder.Services.AddScoped<ICategoryService,CategoryService>();
 builder.Services.AddScoped<ICartService,CartService>();
 builder.Services.AddScoped<IAuthService,AuthService>();
+builder.Services.AddScoped<IOrderService,OrderService>();
 builder.Services.AddMudServices(config =>
 {
     config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomLeft;

@@ -7,9 +7,9 @@ namespace Blecommerce.Server.Controllers
     [ApiController]
     public class CartController : ControllerBase
     {
-        private readonly ICartServiceBE _cartService;
+        private readonly ICartService _cartService;
 
-        public CartController(ICartServiceBE cartService)
+        public CartController(ICartService cartService)
         {
             _cartService = cartService;
         }

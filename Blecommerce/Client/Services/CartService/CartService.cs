@@ -1,6 +1,6 @@
 ﻿using Blazored.LocalStorage;
 
-namespace Blecommerce.Server.Services.CartService
+namespace Blecommerce.Client.Services.CartService
 {
     public class CartService : ICartService
     {

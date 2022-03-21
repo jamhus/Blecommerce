@@ -2,12 +2,12 @@
 
 namespace Blecommerce.Server.Services.CartService
 {
-    public class CartServiceBE : ICartServiceBE
+    public class CartService : ICartService
     {
         private readonly DataContext _context;
         private readonly IHttpContextAccessor _accessor;
 
-        public CartServiceBE(DataContext context, IHttpContextAccessor accessor)
+        public CartService(DataContext context, IHttpContextAccessor accessor)
         {
             _context = context;
             _accessor = accessor;

@@ -5,10 +5,10 @@ namespace Blecommerce.Server.Services.OrderService
     public class OrderService : IOrderService
     {
         private readonly DataContext _context;
-        private readonly ICartServiceBE _cartService;
+        private readonly ICartService _cartService;
         private readonly IHttpContextAccessor _accessor;
 
-        public OrderService(DataContext context,ICartServiceBE cartService,IHttpContextAccessor accessor)
+        public OrderService(DataContext context,ICartService cartService,IHttpContextAccessor accessor)
         {
             _context = context;
             _cartService = cartService;
