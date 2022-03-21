@@ -91,9 +91,13 @@ namespace Blecommerce.Server.Services.CartService
             return result;
         }
 
-        public async Task<ServiceResponse<List<CartProductDto>>> GetDbCartProducts()
+        public async Task<ServiceResponse<List<CartProductDto>>> GetDbCartProducts(int? userId = null)
         {
-            var items = await _context.CartItems.Where(ci=>ci.UserId == _authService.GetUserId()).ToListAsync();
+            if(userId == null)
+            {
+                userId = _authService.GetUserId();
+            }
+            var items = await _context.CartItems.Where(ci=>ci.UserId == userId).ToListAsync();
             return await GetCartProducts(items);
         }
 

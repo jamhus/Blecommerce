@@ -14,9 +14,9 @@ namespace Blecommerce.Server.Services.OrderService
             _cartService = cartService;
             _authService = authService;
         }
-        public async Task<ServiceResponse<bool>> AddOrder()
+        public async Task<ServiceResponse<bool>> AddOrder(int userId)
         {
-            var products = (await _cartService.GetDbCartProducts()).Data;
+            var products = (await _cartService.GetDbCartProducts(userId)).Data;
 
             decimal totalPrice = products!.Sum(product => product.Price * product.Quantity);
 
@@ -32,7 +32,7 @@ namespace Blecommerce.Server.Services.OrderService
 
             var order = new Order
             {
-                UserId = _authService.GetUserId(),
+                UserId = userId,
                 OrderDate = DateTime.Now,
                 TotalPrice = totalPrice,
                 OrderItems = orderItems
@@ -41,7 +41,7 @@ namespace Blecommerce.Server.Services.OrderService
             _context.Orders.Add(order);
 
             _context.CartItems.RemoveRange(
-                _context.CartItems.Where(x => x.UserId == _authService.GetUserId())
+                _context.CartItems.Where(x => x.UserId == userId)
             );
 
             await _context.SaveChangesAsync();

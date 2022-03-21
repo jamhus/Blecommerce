@@ -17,15 +17,17 @@ namespace Blecommerce.Client.Services.OrderService
             _auth = auth;
             _navigation = navigation;
         }
-        public async Task AddOrder()
+        public async Task<string> AddOrder()
         {
             if (await _auth.IsAuthenticated ())
             {
-                await _http.PostAsync("api/order", null);
+                var result = await _http.PostAsync("api/payment/checkout", null);
+                var url = await result.Content.ReadAsStringAsync();
+                return url;
 
             } else
             {
-                _navigation.NavigateTo("login");
+                return "login";
             }
         }
 

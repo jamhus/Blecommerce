@@ -129,5 +129,12 @@ namespace Blecommerce.Server.Services.AuthService
         }
 
         public int GetUserId() => int.Parse(_accessor.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+        public string GetUserEmail() => _accessor!.HttpContext!.User.FindFirstValue(ClaimTypes.Name);
+
+        public async Task<User> GetUserByEmail(string email)
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+        }
     }
 }

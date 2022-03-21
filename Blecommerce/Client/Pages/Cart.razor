@@ -1,6 +1,7 @@
 ﻿@page "/cart"
 @inject ICartService CartService
 @inject IOrderService OrderService
+@inject NavigationManager Navigation
 @implements IDisposable
 
 <MudText Class="mb-10" Typo="Typo.h3">
@@ -13,14 +14,7 @@
         @message
     </MudText>
 }
-else if(orderCreated == true)
-{
-    <center>
-        <MudText Typo="Typo.h5">
-           Thanks! your order has been placed. You can check your orders <a href="/orders" >here</a>
-        </MudText>
-    </center>
-} 
+
 else
 {
     <MudTable Class="mb-10" Items="cartProducts"
@@ -53,46 +47,47 @@ else
         </RowTemplate>
     </MudTable>
 
-     <MudGrid>
-        <MudItem xs="0" md="9">
+    <MudGrid>
+        <MudItem xs="0" md="8">
             <div></div>
         </MudItem>
-        <MudItem xs="12" md="3">
+        <MudItem xs="12" md="4">
             <MudCard>
-        <MudList Clickable="true">
-            <MudListItem Icon="@Icons.Filled.AttachMoney">
-                <MudText Typo="Typo.subtitle1">
-                    Total (@cartProducts.Sum(i=>i.Quantity)): $@cartProducts.Sum(p => p.Price * p.Quantity)
-                </MudText>
-            </MudListItem>
-            <MudDivider />
+                <MudList Clickable="true">
+                    <MudListItem Icon="@Icons.Filled.AttachMoney">
+                        <MudText Typo="Typo.subtitle1">
+                            Total (@cartProducts.Sum(i=>i.Quantity)): $@cartProducts.Sum(p => p.Price * p.Quantity)
+                        </MudText>
+                    </MudListItem>
+                    <MudDivider />
 
-            <MudListItem Icon="@Icons.Material.Filled.Send">
-                <MudButton OnClick="AddOrder" FullWidth="true" Variant="Variant.Outlined" Color="Color.Secondary">
-                    Order
-                </MudButton>
-            </MudListItem>
+                    <MudListItem Icon="@Icons.Material.Filled.Send">
+                        <MudButton Disabled="@_processing" OnClick="AddOrder" FullWidth="true" Variant="Variant.Outlined" Color="Color.Secondary">
+                            @if (_processing)
+                            {
+                                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                                <MudText Class="ms-2">Loading...</MudText>
+                            }
+                            else
+                            {
+                                <MudText>Checkout</MudText>
+                            }
+                        </MudButton>
+                    </MudListItem>
 
-        </MudList>
-    </MudCard>
+                </MudList>
+            </MudCard>
         </MudItem>
     </MudGrid>
-
-    
-
-
 }
 
 @code {
     List<CartProductDto> cartProducts = null;
 
     string message = "Loading cart...";
-
-    bool orderCreated = false;
-
+    bool _processing = false;
     protected override async Task OnInitializedAsync()
     {
-        orderCreated = false;
         CartService.OnChange += StateHasChanged;
         await LoadCart();
     }
@@ -126,11 +121,11 @@ else
         await CartService.UpdateQuantity(product);
     }
 
-    private async Task AddOrder ()
+    private async Task AddOrder()
     {
-        await OrderService.AddOrder();
-        await CartService.GetCartItemsCount();
-        orderCreated = true;
+        _processing = true;
+        string url = await OrderService.AddOrder();
+        Navigation.NavigateTo(url);
     }
 
     public void Dispose()
