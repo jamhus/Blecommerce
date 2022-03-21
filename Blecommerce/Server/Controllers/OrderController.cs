@@ -13,6 +13,13 @@ namespace Blecommerce.Server.Controllers
         {
             _orderService = orderService;
         }
+        
+        [HttpGet]
+        public async Task<ActionResult<ServiceResponse<List<OrderOverViewDto>>>> GetOders()
+        {
+            var orders = await _orderService.GetOrders();
+            return Ok(orders);
+        }
 
         [HttpPost]
 

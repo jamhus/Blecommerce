@@ -48,5 +48,31 @@ namespace Blecommerce.Server.Services.OrderService
 
             return new ServiceResponse<bool> { Data = true };
         }
+
+        public async Task<ServiceResponse<List<OrderOverViewDto>>> GetOrders()
+        {
+            var response = new ServiceResponse<List<OrderOverViewDto>>();
+            var orders = await _context.Orders
+                .Include(o => o.OrderItems)
+                .ThenInclude(o => o.Product)
+                .Where(o => o.UserId == _authService.GetUserId())
+                .OrderByDescending(o => o.OrderDate)
+                .ToListAsync();
+
+            var orderResponse = new List<OrderOverViewDto>();
+            orders.ForEach(o => orderResponse.Add(new OrderOverViewDto
+            {
+                Id = o.Id,
+                OrderDate = o.OrderDate,
+                TotalPrice = o.TotalPrice,
+                Product = o.OrderItems.Count > 1 ?
+                $"{o.OrderItems.First().Product.Title} and {o.OrderItems.Count - 1} more..."
+                : o.OrderItems.First().Product.Title,
+                ImageUrl = o.OrderItems.First().Product.ImageUrl,
+            }));
+
+            response.Data = orderResponse;
+            return response;
+        }
     }
 }
