@@ -4,5 +4,6 @@
     {
         Task<ServiceResponse<bool>> AddOrder();
         Task<ServiceResponse<List<OrderOverViewDto>>> GetOrders();
+        Task<ServiceResponse<OrderDetailsDto>> GetOrdeDetails(int orderId);
     }
 }

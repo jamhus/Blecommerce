@@ -21,6 +21,15 @@ namespace Blecommerce.Server.Controllers
             return Ok(orders);
         }
 
+
+        [HttpGet("{orderId}")]
+        public async Task<ActionResult<ServiceResponse<OrderDetailsDto>>> GetOderDetails(int orderId)
+        {
+            var orders = await _orderService.GetOrdeDetails(orderId);
+            return Ok(orders);
+        }
+
+
         [HttpPost]
 
         public async Task <ActionResult<ServiceResponse<bool>>> AddOrder()

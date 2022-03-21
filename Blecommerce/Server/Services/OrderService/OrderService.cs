@@ -49,6 +49,45 @@ namespace Blecommerce.Server.Services.OrderService
             return new ServiceResponse<bool> { Data = true };
         }
 
+        public async Task<ServiceResponse<OrderDetailsDto>> GetOrdeDetails(int orderId)
+        {
+            var response = new ServiceResponse<OrderDetailsDto>();
+            var order = await _context.Orders
+                .Where(o => o.Id == orderId && o.UserId == _authService.GetUserId())
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.ProductType)
+                .OrderByDescending(o=> o.OrderDate)
+                .FirstOrDefaultAsync();
+
+            if (order == null)
+            {
+                response.Success = false;
+                response.Message = "Order not found";
+                return response;
+            }
+
+            var orderDetailsResponse = new OrderDetailsDto
+            {
+                OrderDate = order.OrderDate,
+                TotalPrice = order.TotalPrice,
+                Products = new List<OrderDetailsProductDto>()
+            };
+
+            order.OrderItems.ForEach(oi => orderDetailsResponse.Products.Add(new OrderDetailsProductDto
+            {
+                ProductId = oi.ProductId,
+                ImageUrl = oi.Product.ImageUrl,
+                ProductType = oi.ProductType.Name,
+                Quantity = oi.Quantity,
+                Title = oi.Product.Title,
+                TotalPrice = oi.TotalPrice
+            }));
+            response.Data = orderDetailsResponse;
+            return response;
+        }
+
         public async Task<ServiceResponse<List<OrderOverViewDto>>> GetOrders()
         {
             var response = new ServiceResponse<List<OrderOverViewDto>>();
