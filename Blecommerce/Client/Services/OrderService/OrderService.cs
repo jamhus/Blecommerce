@@ -29,6 +29,12 @@ namespace Blecommerce.Client.Services.OrderService
             }
         }
 
+        public async Task<List<OrderOverViewDto>> GetOrders()
+        {
+            var result = await _http.GetFromJsonAsync<ServiceResponse<List<OrderOverViewDto>>>("api/order");
+            return result!.Data!;
+        }
+
         private async Task<bool> isAuthenticated()
         {
             return (await _auth.GetAuthenticationStateAsync()).User.Identity!.IsAuthenticated;

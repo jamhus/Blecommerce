@@ -1,0 +1,51 @@
+﻿@page "/orders"
+@inject IOrderService OrderService
+
+<MudText Class="mb-10" Typo="Typo.h3">
+    Orders
+</MudText>
+
+@if (orders == null)
+{
+    <MudText Typo="Typo.h5">
+        Loading your orders ...
+    </MudText>
+}
+
+else if (orders.Count <= 0)
+{
+    <MudText Typo="Typo.h5">
+        you have no orders
+    </MudText>
+}
+else
+{
+    foreach (var order in orders)
+    {
+        var link = $"orders/{order.Id}";
+        <MudPaper>
+            <MudCard Class="d-flex flex-lg-row mb-10">
+                <MudImage ObjectPosition="@ObjectPosition.Center" Src=@order.ImageUrl Width="250" Height="250" Alt=@order.Product Elevation="25" Class="rounded-lg details-img-margin" />
+                <MudCardContent Class="d-flex flex-column justify-content-around w-sm-100">
+                    <MudText Class="mb-5" Typo="Typo.h4">@order.Product</MudText>
+                    <MudText Class="mb-5">
+                        @order.OrderDate
+                    </MudText>
+                    <MudLink Class="mb-5" Href="@link">Show more...</MudLink>
+                    <MudText Typo="Typo.h5" Class="mb-5">
+                        $@order.TotalPrice
+                    </MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudPaper>
+    }
+}
+
+@code {
+    List<OrderOverViewDto> orders = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        orders = await OrderService.GetOrders();
+    }
+}
