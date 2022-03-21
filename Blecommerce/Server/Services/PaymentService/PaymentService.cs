@@ -48,6 +48,10 @@ namespace Blecommerce.Server.Services.PaymentService
             var options = new SessionCreateOptions
             {
                 CustomerEmail = _authService.GetUserEmail(),
+                ShippingAddressCollection = new SessionShippingAddressCollectionOptions
+                {
+                    AllowedCountries = new List<string> { "SE" }
+                },
                 PaymentMethodTypes = new List<string> { "card" },
                 LineItems = lineItem,
                 Mode = "payment",
@@ -63,7 +67,7 @@ namespace Blecommerce.Server.Services.PaymentService
         public async Task<ServiceResponse<bool>> FulfillOrder(HttpRequest request)
         {
             var json = await new StreamReader(request.Body).ReadToEndAsync();
-            try 
+            try
             {
                 var stripeEvent = EventUtility.ConstructEvent(
                     json,
@@ -71,7 +75,7 @@ namespace Blecommerce.Server.Services.PaymentService
                     secret
                     );
 
-                if(stripeEvent.Type == Events.CheckoutSessionCompleted)
+                if (stripeEvent.Type == Events.CheckoutSessionCompleted)
                 {
                     var session = stripeEvent.Data.Object as Session;
                     var user = await _authService.GetUserByEmail(session.CustomerEmail);
