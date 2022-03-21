@@ -39,7 +39,13 @@ namespace Blecommerce.Server.Services.OrderService
             };
 
             _context.Orders.Add(order);
+
+            _context.CartItems.RemoveRange(
+                _context.CartItems.Where(x => x.UserId == GetUserId())
+            );
+
             await _context.SaveChangesAsync();
+
             return new ServiceResponse<bool> { Data = true };
         }
 

@@ -13,6 +13,14 @@
         @message
     </MudText>
 }
+else if(orderCreated == true)
+{
+    <center>
+        <MudText Typo="Typo.h5">
+           Thanks! your order has been placed. You can check your orders <a href="/orders" >here</a>
+        </MudText>
+    </center>
+} 
 else
 {
     <MudTable Class="mb-10" Items="cartProducts"
@@ -77,10 +85,14 @@ else
 
 @code {
     List<CartProductDto> cartProducts = null;
+
     string message = "Loading cart...";
+
+    bool orderCreated = false;
 
     protected override async Task OnInitializedAsync()
     {
+        orderCreated = false;
         CartService.OnChange += StateHasChanged;
         await LoadCart();
     }
@@ -117,6 +129,8 @@ else
     private async Task AddOrder ()
     {
         await OrderService.AddOrder();
+        await CartService.GetCartItemsCount();
+        orderCreated = true;
     }
 
     public void Dispose()
