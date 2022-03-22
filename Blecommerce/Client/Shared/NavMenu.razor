@@ -1,16 +1,15 @@
-﻿@inject ICategoryService CategoryService
+﻿@using System.Text.Json
+@inject ICategoryService CategoryService
 <MudNavMenu>
     <MudNavLink Icon="@Icons.Outlined.Home" Href="/" Match="NavLinkMatch.All">Home</MudNavLink>
 
 
     @foreach (var category in CategoryService.categories)
     {
-        var dict = new Dictionary<int,string>();
 
-        dict[1] = Icons.Filled.MenuBook;
-        dict[2] = Icons.Filled.LocalMovies;
-        dict[3] = Icons.Filled.VideogameAsset;
-        var icon = dict[category.Id];
+        var json = JsonSerializer.Serialize(Icons.Filled);
+        var dict = JsonSerializer.Deserialize<Dictionary<string, string>>(json);
+        var icon = dict[category.Icon];
         <MudNavLink Icon="@icon" Href=@category.Url Match="NavLinkMatch.All">@category.Name</MudNavLink>
     }
 </MudNavMenu>
