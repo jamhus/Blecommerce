@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Blecommerce.Server.Controllers
@@ -19,5 +20,29 @@ namespace Blecommerce.Server.Controllers
         {
             return await _categoryService.GetCategoriesAsync(); 
         }
+
+        [HttpPost("admin"), Authorize(Roles = "Admin")]
+        public async Task<ActionResult<ServiceResponse<List<Category>>>> AddCategory(Category category)
+        {
+            return await _categoryService.AddCategory(category);
+        }
+
+        [HttpPut("admin"), Authorize(Roles = "Admin")]
+        public async Task<ActionResult<ServiceResponse<List<Category>>>> UpdateCategory(Category category)
+        {
+            return await _categoryService.UpdateCategory(category);
+        }
+
+        [HttpGet("admin"), Authorize(Roles = "Admin")]
+        public async Task<ActionResult<ServiceResponse<List<Category>>>> GetAdminCategories()
+        {
+            return await _categoryService.GetAdminCategories();
+        }
+        [HttpDelete("admin"), Authorize(Roles = "Admin")]
+        public async Task<ActionResult<ServiceResponse<List<Category>>>> DeleteCategory(int id)
+        {
+            return await _categoryService.DeleteCategory(id);
+        }
     }
 }
+
