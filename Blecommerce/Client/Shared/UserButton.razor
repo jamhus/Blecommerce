@@ -6,9 +6,10 @@
 <MudMenu Variant="Variant.Outlined" Icon="@Icons.Filled.Person" Color="Color.Secondary">
     <AuthorizeView>
         <Authorized>
-           <MudMenuItem Link="profile">Profile</MudMenuItem>
-           <MudMenuItem Link="orders">Orders</MudMenuItem>
-           <MudMenuItem OnClick="Logout">Logout</MudMenuItem>
+            <MudMenuItem Link="profile">Profile</MudMenuItem>
+            <MudMenuItem Link="orders">Orders</MudMenuItem>
+            <AdminMenu />
+            <MudMenuItem OnClick="Logout">Logout</MudMenuItem>
         </Authorized>
 
         <NotAuthorized>
@@ -22,7 +23,7 @@
 </MudMenu>
 @code {
 
-    private void NavLogin (string url)
+    private void NavLogin(string url)
     {
         NavigationManager.NavigateTo($"login?returnUrl={url}");
     }

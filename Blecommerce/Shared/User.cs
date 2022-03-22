@@ -13,5 +13,6 @@ namespace Blecommerce.Shared
         public byte[] PasswordHash { get; set; } = default!;
         public byte[] PasswordSalt { get; set; } = default!;
         public DateTime DateCreated { get; set; } = DateTime.Now;
+        public string Role { get; set; } = "Customer";
     }
 }
