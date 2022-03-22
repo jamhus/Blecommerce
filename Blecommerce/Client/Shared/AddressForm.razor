@@ -1,0 +1,105 @@
+﻿@inject IAddressService AddressService
+@inject ISnackbar Snackbar
+
+
+@if (address == null)
+{
+    <MudText>
+        you haven't specified a delivery address.
+        <MudButton Variant="Variant.Text" OnClick="InitAddress">Add an address</MudButton>
+    </MudText>
+}
+
+else if (editAddress == false)
+{
+    <MudText Typo="Typo.subtitle1">
+        @address.FirstName @address.LastName
+    </MudText>
+    <MudText Typo="Typo.subtitle1">
+        @address.Street
+    </MudText>
+    <MudText Typo="Typo.subtitle1">
+        @address.City, @address.State, @address.Zip
+    </MudText>
+    <MudText Typo="Typo.subtitle1">
+        @address.Country
+    </MudText>
+    <MudButton Class="my-5" Variant="Variant.Outlined" OnClick="EditAddress">Edit</MudButton>
+}
+else
+{
+    <EditForm Model="@address" OnSubmit="OnSubmit">
+        <DataAnnotationsValidator />
+        <MudGrid>
+            <MudItem xs="0" md="3">
+                <div></div>
+            </MudItem>
+            <MudItem xs="12" md="6">
+                <MudCard>
+                    <MudCardContent>
+
+                        <MudTextField Label="FirstName" Class="mt-3"
+                                  @bind-Value="address.FirstName" For="@(() => address.FirstName)" />
+                        <MudTextField Label="LastName" Class="mt-3"
+                                  @bind-Value="address.LastName" For="@(() => address.LastName)" />
+                        <MudTextField Label="Country" Class="mt-3"
+                                  @bind-Value="address.Country" For="@(() => address.Country)" />
+                        <MudTextField Label="State" Class="mt-3"
+                                  @bind-Value="address.State" For="@(() => address.State)" />
+                        <MudTextField Label="City" Class="mt-3"
+                                  @bind-Value="address.City" For="@(() => address.City)" />
+                        <MudTextField Label="Zip" Class="mt-3"
+                                  @bind-Value="address.Zip" For="@(() => address.Zip)" />
+                        <MudTextField Label="Street" Class="mt-3"
+                                  @bind-Value="address.Street" For="@(() => address.Street)" />
+
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudButton Disabled="@_processing" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">
+                            @if (_processing)
+                            {
+                                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                                <MudText Class="ms-2">Loading...</MudText>
+                            }
+                            else
+                            {
+                                <MudText>Save</MudText>
+                            }
+                        </MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+        </MudGrid>
+    </EditForm>
+}
+@code {
+
+    private bool _processing = false;
+    bool editAddress = false;
+    Address address = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        address = await AddressService.GetAddress();
+    }
+
+    private async Task OnSubmit(EditContext context)
+    {
+        _processing = true;
+        editAddress = false;
+        var result = await AddressService.AddOrUpdate(address);
+        Snackbar.Add("Succrssfully Saved Address", Severity.Success);      
+        _processing = false;
+    }
+
+    private void InitAddress()
+    {
+        address = new Address();
+        editAddress = true;
+    }
+
+    private void EditAddress()
+    {
+        editAddress = true;
+    }
+}

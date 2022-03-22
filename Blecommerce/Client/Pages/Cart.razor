@@ -2,6 +2,7 @@
 @inject ICartService CartService
 @inject IOrderService OrderService
 @inject NavigationManager Navigation
+@inject IAuthService AuthService
 @implements IDisposable
 
 <MudText Class="mb-10" Typo="Typo.h3">
@@ -48,8 +49,18 @@ else
     </MudTable>
 
     <MudGrid>
-        <MudItem xs="0" md="8">
-            <div></div>
+        <MudItem xs="12" md="8">
+            @if (_isAuthenticated)
+            {
+                <MudCard>
+                    <MudText Class="pa-6" Typo="Typo.h5">
+                        Delivery address
+                    </MudText>
+                    <div class="pa-6">
+                        <AddressForm />
+                    </div>
+                </MudCard>
+            }
         </MudItem>
         <MudItem xs="12" md="4">
             <MudCard>
@@ -79,15 +90,17 @@ else
             </MudCard>
         </MudItem>
     </MudGrid>
+
 }
 
 @code {
     List<CartProductDto> cartProducts = null;
-
     string message = "Loading cart...";
     bool _processing = false;
+    bool _isAuthenticated = false;
     protected override async Task OnInitializedAsync()
     {
+        _isAuthenticated = await AuthService.IsAuthenticated();
         CartService.OnChange += StateHasChanged;
         await LoadCart();
     }
