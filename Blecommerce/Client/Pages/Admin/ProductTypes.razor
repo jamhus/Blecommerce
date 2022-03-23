@@ -1,0 +1,97 @@
+﻿@page "/admin/product-types"
+@inject IProductTypeService ProductTypeService
+@implements IDisposable
+@attribute [Authorize(Roles = "Admin")]
+
+<MudGrid>
+    <MudItem xs="0" md="3">
+        <div></div>
+    </MudItem>
+    <MudItem xs="12" md="6">
+        <MudTable FixedHeader="true" Height="500px" Items="ProductTypeService.ProductTypes" Hover="true" ReadOnly="false" CanCancelEdit="true"
+                  @bind-SelectedItem="editingType" OnCommitEditClick="@(() => UpdateType())" RowEditCancel="ResetItemToOriginalValues" RowEditPreview="BackupItem" CommitEditTooltip="Save changes">
+            <ToolBarContent>
+                <MudText Typo="Typo.h6">Product Types</MudText>
+            </ToolBarContent>
+            <HeaderContent>
+                <MudTh>Id</MudTh>
+                <MudTh>Name</MudTh>
+            </HeaderContent>
+
+            <RowTemplate>
+                <MudTd DataLabel="Id">@context.Id</MudTd>
+                <MudTd DataLabel="Name">@context.Name</MudTd>
+            </RowTemplate>
+            <RowEditingTemplate>
+                <MudTd DataLabel="Id">@context.Id</MudTd>
+                <MudTd DataLabel="Name">
+                    <MudTextField @bind-Value="@context.Name" Required />
+                </MudTd>
+            </RowEditingTemplate>
+            <PagerContent>
+                <MudButton Class="ma-3" Variant="Variant.Filled" Color="Color.Secondary" OnClick="CreateNewType">Add new</MudButton>
+            </PagerContent>
+        </MudTable>
+    </MudItem>
+</MudGrid>
+
+
+@code {
+    ProductType editingType = null;
+    private ProductType TypeBeforeEdit;
+
+    private void BackupItem(object element)
+    {
+        TypeBeforeEdit = new()
+            {
+                Name = ((ProductType)element).Name,
+            };
+    }
+
+    private void ResetItemToOriginalValues(object element)
+    {
+        ((ProductType)element).Name = TypeBeforeEdit.Name;
+
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ProductTypeService.GetProductTypes();
+        ProductTypeService.OnChange += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        ProductTypeService.OnChange -= StateHasChanged;
+    }
+
+    private void CreateNewType()
+    {
+        editingType = ProductTypeService.CreateNewProductType();
+    }
+
+    private void EditType(ProductType type)
+    {
+        type.Editing = true;
+        editingType = type;
+    }
+
+    private async Task UpdateType()
+    {
+        if (editingType.ISNew)
+        {
+           await ProductTypeService.AddProductType(editingType);
+        }
+        else
+        {
+           await ProductTypeService.UpdateProductType(editingType);
+        }
+        editingType = new ProductType();
+    }
+
+    private async Task CancelEditing()
+    {
+        editingType = new ProductType();
+        await ProductTypeService.GetProductTypes();
+    }
+}

@@ -3,6 +3,7 @@ global using Blecommerce.Shared.DTOS;
 
 global using System.Net.Http.Json;
 global using Blecommerce.Client.Services.ProductService;
+global using Blecommerce.Client.Services.ProductTypesService;
 global using Blecommerce.Client.Services.CategoryService;
 global using Blecommerce.Client.Services.AuthService;
 global using Microsoft.AspNetCore.Components.Authorization;
@@ -17,7 +18,6 @@ using MudBlazor.Services;
 using Blazored.LocalStorage;
 using MudBlazor;
 
-
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
@@ -25,6 +25,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 builder.Services.AddScoped<IProductService,ProductService>();
+builder.Services.AddScoped<IProductTypeService,ProductTypeService>();
 builder.Services.AddScoped<ICategoryService,CategoryService>();
 builder.Services.AddScoped<ICartService,CartService>();
 builder.Services.AddScoped<IAuthService,AuthService>();
