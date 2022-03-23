@@ -11,12 +11,27 @@ namespace Blecommerce.Server.Services.ProductService
             _context = context;
         }
 
+        public async Task<ServiceResponse<List<Product>>> GetAdminProducts()
+        {
+            var products = await _context.Products
+             .Where(p => !p.Deleted)
+             .Include(p => p.Variants.Where(v =>!v.Deleted))
+             .ThenInclude(v=> v.ProductType)
+             .ToListAsync();
+
+            var response = new ServiceResponse<List<Product>>()
+            {
+                Data = products
+            };
+            return response;
+        }
+
         public async Task<ServiceResponse<List<Product>>> GetFeaturedProducts()
         {
             var products = await _context.Products
-             .Include(p => p.Variants)
-             .Where(p => p.Featured == true)
-             .ToListAsync();
+            .Where(p => p.Visible && !p.Deleted && p.Featured)
+            .Include(p => p.Variants.Where(v => v.Visible && !v.Deleted))
+            .ToListAsync();
 
             var response = new ServiceResponse<List<Product>>()
             {
@@ -28,7 +43,8 @@ namespace Blecommerce.Server.Services.ProductService
         public async Task<ServiceResponse<Product>> GetProductAsync(int id)
         {
             var product = await _context.Products
-                .Include(p => p.Variants)
+                .Where(p => p.Visible && !p.Deleted)
+                .Include(p => p.Variants.Where(v => v.Visible && !v.Deleted))
                 .ThenInclude(p => p.ProductType)
                 .FirstOrDefaultAsync(p => p.Id == id);
             var response = new ServiceResponse<Product>();
@@ -47,7 +63,8 @@ namespace Blecommerce.Server.Services.ProductService
         public async Task<ServiceResponse<List<Product>>> GetProductsAsync()
         {
             var products = await _context.Products
-                .Include(p => p.Variants)
+                .Where(p => p.Visible && !p.Deleted)
+                .Include(p => p.Variants.Where(v => v.Visible && !v.Deleted))
                 .ToListAsync();
 
             var response = new ServiceResponse<List<Product>>()
@@ -62,8 +79,8 @@ namespace Blecommerce.Server.Services.ProductService
             var response = new ServiceResponse<List<Product>>
             {
                 Data = await _context.Products
-                .Where(p => p.Category!.Url.ToLower() == categoryUrl.ToLower())
-                .Include(p => p.Variants)
+                .Where(p => p.Category!.Url.ToLower() == categoryUrl.ToLower() && p.Visible && !p.Deleted)
+                .Include(p => p.Variants.Where(v => v.Visible && !v.Deleted))
                 .ToListAsync()
             };
 
@@ -76,8 +93,9 @@ namespace Blecommerce.Server.Services.ProductService
             var pageCount = Math.Ceiling((await FindProductsBySearchText(searchText)).Count / pageResults);
             var products = await _context.Products
                                 .Where(p => p.Title.ToLower().Contains(searchText.ToLower()) ||
-                                    p.Description.ToLower().Contains(searchText.ToLower()))
-                                .Include(p => p.Variants)
+                                    p.Description.ToLower().Contains(searchText.ToLower())
+                                    && p.Visible && !p.Deleted)
+                                .Include(p => p.Variants.Where(v => v.Visible && !v.Deleted))
                                 .Skip((page - 1) * (int)pageResults)
                                 .Take((int)pageResults)
                                 .ToListAsync();
@@ -98,10 +116,11 @@ namespace Blecommerce.Server.Services.ProductService
         private async Task<List<Product>> FindProductsBySearchText(string searchText)
         {
             return await _context.Products
-                                .Include(p => p.Variants)
-                                .Where(p => p.Title.ToLower().Contains(searchText.ToLower()) ||
-                                    p.Description.ToLower().Contains(searchText.ToLower()))
-                                .ToListAsync();
+                .Include(p => p.Variants.Where(v => v.Visible && !v.Deleted))
+                .Where(p => p.Title.ToLower().Contains(searchText.ToLower())
+                || p.Description.ToLower().Contains(searchText.ToLower())
+                && p.Visible && !p.Deleted)
+                .ToListAsync();
         }
     }
 }

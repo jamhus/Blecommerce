@@ -10,12 +10,24 @@ namespace Blecommerce.Client.Services.ProductService
             _http = http;
         }
         public List<Product> products { get; set; } = new List<Product>();
+        public List<Product> AdminProducts { get; set; } = new List<Product>();
         public string Message { get; set; } = "Loading products...";
         public int CurrentPage { get; set; } = 1;
         public int PageCount { get; set; } = 0;
         public string LastSearchString { get; set; } = String.Empty;   
 
         public event Action ProductsChanged = default!;
+
+        public async Task GetAdminProducts()
+        {
+            var result = await _http
+                .GetFromJsonAsync<ServiceResponse<List<Product>>>("api/product/admin");
+            AdminProducts = result.Data;
+            CurrentPage = 1;
+            PageCount = 0;
+            if (AdminProducts.Count == 0)
+                Message = "No products found.";
+        }
 
         public async Task<ServiceResponse<Product>> GetProduct(int id)
         {

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Blecommerce.Server.Controllers
 {
@@ -41,6 +42,13 @@ namespace Blecommerce.Server.Controllers
         public async Task<ActionResult<ServiceResponse<List<Product>>>> GetFeaturedProducts()
         {
             return await _productService.GetFeaturedProducts();
+        }
+
+        [HttpGet("admin"), Authorize(Roles = "Admin")]
+
+        public async Task<ActionResult<ServiceResponse<List<Product>>>> GetAdminProducts()
+        {
+            return await _productService.GetAdminProducts();
         }
     }
 }

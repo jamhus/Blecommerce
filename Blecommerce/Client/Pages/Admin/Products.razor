@@ -1,0 +1,80 @@
+﻿@page "/admin/products"
+@inject IProductService ProductService
+@inject NavigationManager NavigationManager
+@attribute [Authorize(Roles = "Admin")]
+
+<MudTable Loading="_loading" Class="mb-10" Items="ProductService.AdminProducts"
+          Hover="true" Elevation="1">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Products</MudText>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>Title</MudTh>
+        <MudTh>Image</MudTh>
+        <MudTh>Variants</MudTh>
+        <MudTh>Price</MudTh>
+        <MudTh>Visible</MudTh>
+        <MudTh></MudTh>
+
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Title">
+            @context.Title
+        </MudTd>
+        <MudTd DataLabel="Image">
+            <MudAvatar Style="height:60px; width:60px;" Image=@context.ImageUrl />
+        </MudTd>
+        <MudTd DataLabel="Variants">
+            @foreach (var item in @context.Variants)
+            {
+                <span>@item.ProductType.Name</span>
+
+                <br />
+            }
+        </MudTd>
+
+        <MudTd DataLabel="Price">
+            @foreach (var item in @context.Variants)
+            {
+                <span>$@item.Price</span>
+
+                <br />
+            }
+        </MudTd>
+        <MudTd DataLabel="Visible">
+            @if (context.Visible)
+            {
+                <MudIcon Icon="@Icons.Filled.Visibility"></MudIcon>
+            }
+            else
+            {
+                <MudIcon Icon="@Icons.Filled.VisibilityOff"></MudIcon>
+            }
+        </MudTd>
+        <MudTd DataLabel="Edit">
+            <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="(e)=> EditProduct(context.Id)" Color="Color.Secondary" />
+        </MudTd>
+    </RowTemplate>
+            <PagerContent>
+            <MudButton Class="ma-3" Variant="Variant.Filled" Color="Color.Secondary" OnClick="CreateProduct">Add new</MudButton>
+        </PagerContent>
+</MudTable>
+
+@code {
+    private bool _loading = true;
+    protected override async Task OnInitializedAsync()
+    {
+        await ProductService.GetAdminProducts();
+        _loading = false;
+    }
+
+     void EditProduct(int productId)
+    {
+        NavigationManager.NavigateTo($"admin/product/{productId}");
+    }
+
+    void CreateProduct()
+    {
+        NavigationManager.NavigateTo("admin/product");
+    }
+}
