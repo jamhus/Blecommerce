@@ -1,8 +1,130 @@
 ﻿@page "/admin/categories"
+@inject ICategoryService CategoryService
+@implements IDisposable
 @attribute [Authorize(Roles = "Admin")]
 
-<h3>Categories</h3>
+
+<MudTable Items="CategoryService.AdminCategories" Hover="true" ReadOnly="false" CanCancelEdit="true"
+          @bind-SelectedItem="editingCategory" OnCommitEditClick="@(() => UpdateCategory())" RowEditCancel="ResetItemToOriginalValues" RowEditPreview="BackupItem" CommitEditTooltip="Save changes">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Categories</MudText>
+
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>Id</MudTh>
+        <MudTh>Name</MudTh>
+        <MudTh>Url</MudTh>
+        <MudTh>Icon</MudTh>
+        <MudTh>Visible</MudTh>
+        <MudTh></MudTh>
+    </HeaderContent>
+
+    <RowTemplate>
+        <MudTd DataLabel="Id">@context.Id</MudTd>
+        <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd DataLabel="Url">@context.Url</MudTd>
+        <MudTd DataLabel="Icon">@context.Icon</MudTd>
+        <MudTd DataLabel="Visible">
+            @if (context.Visible)
+            {
+                <MudIcon Icon="@Icons.Filled.Visibility"></MudIcon>
+            }
+            else
+            {
+                <MudIcon Icon="@Icons.Filled.VisibilityOff"></MudIcon>
+            }
+        </MudTd>
+        <MudTd DataLabel="Delete">
+            <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="(e)=> DeleteCategory(context.Id)" Color="Color.Error" />
+        </MudTd>
+    </RowTemplate>
+    <RowEditingTemplate>
+        <MudTd DataLabel="Id">@context.Id</MudTd>
+        <MudTd DataLabel="Name">
+            <MudTextField @bind-Value="@context.Name" Required />
+        </MudTd>
+        <MudTd DataLabel="Url">
+            <MudTextField @bind-Value="@context.Url" Required />
+        </MudTd>
+        <MudTd DataLabel="Icon">
+            <MudTextField @bind-Value="@context.Icon" Required />
+        </MudTd>
+        <MudTd DataLabel="Visible">
+            <MudCheckBox @bind-Checked="@context.Visible"></MudCheckBox>
+        </MudTd>
+    </RowEditingTemplate>
+    <FooterContent>
+        <MudButton Class="ma-3" Variant="Variant.Filled" Color="Color.Secondary" OnClick="CreateNewCategory">Add new</MudButton>
+    </FooterContent>
+</MudTable>
 
 @code {
+    Category editingCategory = null;
+    private Category categoryBeforeEdit;
 
+    private void BackupItem(object element)
+    {
+        categoryBeforeEdit = new()
+            {
+                Name = ((Category)element).Name,
+                Url = ((Category)element).Url,
+                Icon = ((Category)element).Icon,
+                Visible = ((Category)element).Visible,
+
+            };
+    }
+
+    private void ResetItemToOriginalValues(object element)
+    {
+        ((Category)element).Name = categoryBeforeEdit.Name;
+        ((Category)element).Url = categoryBeforeEdit.Url;
+        ((Category)element).Icon = categoryBeforeEdit.Icon;
+        ((Category)element).Visible = categoryBeforeEdit.Visible;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CategoryService.GetAdminCategories();
+        CategoryService.OnChange += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        CategoryService.OnChange -= StateHasChanged;
+    }
+
+    private void CreateNewCategory()
+    {
+        editingCategory = CategoryService.CreateNewCategory();
+    }
+
+    private void EditCategory(Category category)
+    {
+        category.Editing = true;
+        editingCategory = category;
+    }
+
+    private async Task UpdateCategory()
+    {
+        if (editingCategory.ISNew)
+        {
+            await CategoryService.AddCategory(editingCategory);
+        }
+        else
+        {
+            await CategoryService.UpdateCategory(editingCategory);
+        }
+        editingCategory = new Category();
+    }
+
+    private async Task CancelEditing()
+    {
+        editingCategory = new Category();
+        await CategoryService.GetAdminCategories();
+    }
+
+    private async Task DeleteCategory(int id)
+    {
+        await CategoryService.DeleteCategory(id);
+    }
 }

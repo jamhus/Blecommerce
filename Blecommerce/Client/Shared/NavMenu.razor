@@ -1,10 +1,11 @@
 ﻿@using System.Text.Json
 @inject ICategoryService CategoryService
+@implements IDisposable
 <MudNavMenu>
     <MudNavLink Icon="@Icons.Outlined.Home" Href="/" Match="NavLinkMatch.All">Home</MudNavLink>
 
 
-    @foreach (var category in CategoryService.categories)
+    @foreach (var category in CategoryService.Categories)
     {
 
         var json = JsonSerializer.Serialize(Icons.Filled);
@@ -17,6 +18,12 @@
 @code {
     protected override async Task OnInitializedAsync()
     {
+        CategoryService.OnChange += StateHasChanged;
         await CategoryService.GetCategories();
+    }
+
+    public void Dispose()
+    {
+        CategoryService.OnChange -= StateHasChanged;
     }
 }

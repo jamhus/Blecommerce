@@ -2,8 +2,14 @@
 {
     public interface ICategoryService
     {
-        List<Category> categories { get; set; }
+        event Action OnChange;
+        List<Category> Categories { get; set; }
+        List<Category> AdminCategories { get; set; }
         Task GetCategories();
-        Task<ServiceResponse<Category>> GetCategory(int id);
+        Task GetAdminCategories();
+        Task AddCategory(Category category);
+        Task UpdateCategory(Category category);
+        Task DeleteCategory(int categoryId);
+        Category CreateNewCategory();
     }
 }
