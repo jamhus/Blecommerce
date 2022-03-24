@@ -50,5 +50,23 @@ namespace Blecommerce.Server.Controllers
         {
             return await _productService.GetAdminProducts();
         }
+
+        [HttpPost, Authorize(Roles = "Admin")]
+        public async Task<ActionResult<ServiceResponse<Product>>> CreateProduct (Product product)
+        {
+            return await _productService.CreateProduct(product);
+        }
+
+        [HttpPut, Authorize(Roles = "Admin")]
+        public async Task<ActionResult<ServiceResponse<Product>>> UpdateProduct(Product product)
+        {
+            return await _productService.UpdateProduct(product);
+        }
+
+        [HttpDelete("{id}"), Authorize(Roles = "Admin")]
+        public async Task<ActionResult<ServiceResponse<bool>>> DeleteProduct(int id)
+        {
+            return await _productService.DeleteProduct(id);
+        }
     }
 }

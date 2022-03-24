@@ -14,5 +14,8 @@ namespace Blecommerce.Client.Services.ProductService
         Task GetAdminProducts();
         Task SearchProducts(string searchtext, int page);
         Task<ServiceResponse<Product>> GetProduct(int id);
+        Task<Product> CreateProduct(Product product);
+        Task<Product> UpdateProduct(Product product);
+        Task DeleteProduct(Product product);
     }
 }

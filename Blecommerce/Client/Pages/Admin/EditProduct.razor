@@ -1,0 +1,203 @@
+﻿@page "/admin/product"
+@page "/admin/product/{id:int}"
+@inject IProductService ProductService
+@inject IProductTypeService ProductTypeService
+@inject ICategoryService CategoryService
+@inject NavigationManager NavigationManager
+@inject IDialogService DialogService
+
+@if (loading)
+{
+    <span>@msg</span>
+}
+else
+{
+
+
+    <EditForm Model="@product" OnValidSubmit="AddOrUpdateProduct">
+        <DataAnnotationsValidator />
+        <MudGrid>
+            <MudItem xs="0" sm="2">
+                <div></div>
+            </MudItem>
+            <MudItem xs="12" md="8">
+                @if (product.Editing)
+                {
+                    <MudText Typo="Typo.h4">Edit "@product.Title"</MudText>
+                }
+                else if (product.ISNew)
+                {
+                    <MudText Typo="Typo.h4">Create new product</MudText>
+                }
+                <MudCard Class="mt-5">
+                    <MudCardContent>
+                        <MudTextField Label="Title"
+                                  @bind-Value="product.Title" For="@(() => product.Title)" />
+
+                        <MudTextField Label="Image Url" Class="mt-3"
+                                  @bind-Value="product.ImageUrl" For="@(() => product.ImageUrl)" />
+                        <MudImage ObjectPosition="@ObjectPosition.Center" Src=@product.ImageUrl Width="250" Height="250" Alt=@product.Title Elevation="25" Class="rounded-lg details-img-margin" />
+                        <MudTextField Lines="5" Label="Description"
+                                  @bind-Value="product.Description" For="@(() => product.Description)" />
+
+                        <MudTable Items="@product.Variants" Hover="true">
+                            <ToolBarContent>
+                                <MudText Typo="Typo.h6">Variants</MudText>
+
+                            </ToolBarContent>
+                            <HeaderContent>
+                                <MudTh>Product Type / Variant</MudTh>
+                                <MudTh>Price</MudTh>
+                                <MudTh>Original Price</MudTh>
+                                <MudTh>Visible</MudTh>
+                                <MudTh></MudTh>
+                            </HeaderContent>
+
+                            <RowTemplate Context="variant">
+                                <MudTd DataLabel="Variants">
+                                    <MudSelect @bind-Value="variant.ProductTypeId" Label="Variants" Disabled="@variant.Deleted" AnchorOrigin="Origin.BottomCenter">
+                                        @foreach (var productType in ProductTypeService.ProductTypes)
+                                        {
+                                        <MudSelectItem Value="@productType.Id">@productType.Name </MudSelectItem>
+
+                                        }
+                                </MudSelect>
+                            </MudTd>
+                            <MudTd DataLabel="Price">
+                                <MudTextField Disabled="@variant.Deleted" @bind-Value="@variant.Price" Label="Price" Format="F1" />
+                            </MudTd>
+                            <MudTd DataLabel="Original Price">
+                                <MudTextField Disabled="@variant.Deleted" @bind-Value="@variant.OriginalPrice" Label="Original Price" Format="F1" />
+                            </MudTd>
+
+                            <MudTd DataLabel="Visible">
+                                <MudCheckBox Disabled="@variant.Deleted" @bind-Checked="@variant.Visible"></MudCheckBox>
+
+                            </MudTd>
+                            <MudTd DataLabel="Delete">
+                                <MudIconButton ButtonType="ButtonType.Button" Icon="@Icons.Material.Filled.Delete" OnClick="(e)=> RemoveVariant(variant.ProductTypeId)" Color="Color.Error" />
+                            </MudTd>
+                        </RowTemplate>
+
+                        <FooterContent>
+                            <MudButton Class="ma-3" ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Secondary" OnClick="AddVariant">Add new</MudButton>
+                        </FooterContent>
+                    </MudTable>
+
+                    <MudSelect @bind-Value="product.CategoryId" Label="Categories" Disabled="@product.Deleted" AnchorOrigin="Origin.BottomCenter">
+                        @foreach (var category in CategoryService.AdminCategories)
+                            {
+                            <MudSelectItem Value="@category.Id">@category.Name </MudSelectItem>
+
+                            }
+                    </MudSelect>
+
+                    <MudCheckBox Label="Visible" Disabled="@product.Deleted" @bind-Checked="@product.Visible"></MudCheckBox>
+                    <MudCheckBox Label="Featured" Disabled="@product.Deleted" @bind-Checked="@product.Featured"></MudCheckBox>
+
+                </MudCardContent>
+
+                <MudCardActions>
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Save</MudButton>
+                    @if (!product.ISNew)
+                        {
+                            <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Error" Class="ml-2" OnClick="DeleteProduct">
+                                Delete Product
+                            </MudButton>
+                        }
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+        </MudGrid>
+    </EditForm>
+}
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    Product product = new Product();
+    bool loading = true;
+    string btnText = "";
+    string msg = "Loading...";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ProductTypeService.GetProductTypes();
+        await CategoryService.GetAdminCategories();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Id == 0)
+        {
+            product = new Product { ISNew = true };
+            btnText = "Create Product";
+        }
+        else
+        {
+            Product dbProduct = (await ProductService.GetProduct(Id)).Data;
+            if (dbProduct == null)
+            {
+                msg = $"Product with Id '{Id}' does not exist!";
+                return;
+            }
+            product = dbProduct;
+            product.Editing = true;
+            btnText = "Update Product";
+        }
+        loading = false;
+    }
+
+    void RemoveVariant(int productTypeId)
+    {
+        var variant = product.Variants.Find(v => v.ProductTypeId == productTypeId);
+        if (variant == null)
+        {
+            return;
+        }
+        if (variant.ISNew)
+        {
+            product.Variants.Remove(variant);
+        }
+        else
+        {
+            variant.Deleted = true;
+        }
+    }
+
+    void AddVariant()
+    {
+        product.Variants
+            .Add(new ProductVariant { ISNew = true, ProductId = product.Id });
+    }
+
+    async void AddOrUpdateProduct()
+    {
+        if (product.ISNew)
+        {
+            var result = await ProductService.CreateProduct(product);
+            NavigationManager.NavigateTo($"admin/product/{result.Id}");
+        }
+        else
+        {
+            product.ISNew = false;
+            product = await ProductService.UpdateProduct(product);
+            NavigationManager.NavigateTo($"admin/product/{product.Id}", true);
+        }
+    }
+
+    async void DeleteProduct()
+    {
+
+
+        var options = new DialogOptions() { MaxWidth = MaxWidth.Medium  };
+
+        var dialog = await DialogService.ShowMessageBox("Delete","Are you sure?","Yes","No" ,"",options);
+        var result = dialog.Value;
+        if (result)        {
+            await ProductService.DeleteProduct(product);
+            NavigationManager.NavigateTo("admin/products");
+        }
+
+    }
+}

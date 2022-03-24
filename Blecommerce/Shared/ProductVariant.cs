@@ -12,9 +12,9 @@ namespace Blecommerce.Shared
     {
         public int ProductId { get; set; }
         [JsonIgnore]
-        public Product Product { get; set; } = default!;
+        public Product? Product { get; set; } = default!;
         public int ProductTypeId { get; set; }
-        public ProductType ProductType { get; set; } = default!;
+        public ProductType? ProductType { get; set; } = default!;
         [Column(TypeName ="decimal(18,2)")]
         public decimal Price { get; set; }
         [Column(TypeName = "decimal(18,2)")]
