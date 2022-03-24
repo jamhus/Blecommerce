@@ -5,10 +5,12 @@ namespace Blecommerce.Server.Services.ProductService
     public class ProductService : IProductService
     {
         private readonly DataContext _context;
+        private readonly IHttpContextAccessor _accessor;
 
-        public ProductService(DataContext context)
+        public ProductService(DataContext context, IHttpContextAccessor accessor)
         {
             _context = context;
+            _accessor = accessor;
         }
 
         public async Task<ServiceResponse<List<Product>>> GetAdminProducts()
@@ -42,11 +44,25 @@ namespace Blecommerce.Server.Services.ProductService
 
         public async Task<ServiceResponse<Product>> GetProductAsync(int id)
         {
-            var product = await _context.Products
-                .Where(p => p.Visible && !p.Deleted)
-                .Include(p => p.Variants.Where(v => v.Visible && !v.Deleted))
+            Product product = null;
+
+            if (_accessor.HttpContext.User.IsInRole("Admin"))
+            {
+                await _context.Products
+                .Where(p => !p.Deleted)
+                .Include(p => p.Variants.Where(v => !v.Deleted))
                 .ThenInclude(p => p.ProductType)
                 .FirstOrDefaultAsync(p => p.Id == id);
+            }
+            else
+            {
+                product = await _context.Products
+               .Where(p => p.Visible && !p.Deleted)
+               .Include(p => p.Variants.Where(v => v.Visible && !v.Deleted))
+               .ThenInclude(p => p.ProductType)
+               .FirstOrDefaultAsync(p => p.Id == id);
+            }
+
             var response = new ServiceResponse<Product>();
             if (product == null)
             {
