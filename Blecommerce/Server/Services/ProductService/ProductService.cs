@@ -71,40 +71,11 @@ namespace Blecommerce.Server.Services.ProductService
             var dbProduct = await _context.Products.FindAsync(productId);
             if (dbProduct == null)
             {
-                return new ServiceResponse<bool> { Data = false, Success = false , Message = "Product not found" };
+                return new ServiceResponse<bool> { Data = false, Success = false, Message = "Product not found" };
             }
             dbProduct.Deleted = true;
             await _context.SaveChangesAsync();
             return new ServiceResponse<bool> { Data = true };
-        }
-     
-        public async Task<ServiceResponse<List<Product>>> GetAdminProducts()
-        {
-            var products = await _context.Products
-             .Where(p => !p.Deleted)
-             .Include(p => p.Variants.Where(v =>!v.Deleted))
-             .ThenInclude(v=> v.ProductType)
-             .ToListAsync();
-
-            var response = new ServiceResponse<List<Product>>()
-            {
-                Data = products
-            };
-            return response;
-        }
-
-        public async Task<ServiceResponse<List<Product>>> GetFeaturedProducts()
-        {
-            var products = await _context.Products
-            .Where(p => p.Visible && !p.Deleted && p.Featured)
-            .Include(p => p.Variants.Where(v => v.Visible && !v.Deleted))
-            .ToListAsync();
-
-            var response = new ServiceResponse<List<Product>>()
-            {
-                Data = products
-            };
-            return response;
         }
 
         public async Task<ServiceResponse<Product>> GetProductAsync(int id)
@@ -141,67 +112,26 @@ namespace Blecommerce.Server.Services.ProductService
             return response;
         }
 
-        public async Task<ServiceResponse<List<Product>>> GetProductsAsync()
+        public async Task<ServiceResponse<ProductListDto>> GetPagedProducts(ProductParams productParams, bool admin)
         {
-            var products = await _context.Products
-                .Where(p => p.Visible && !p.Deleted)
-                .Include(p => p.Variants.Where(v => v.Visible && !v.Deleted))
-                .ToListAsync();
+            var query = _context.Products
+                .IsAdmin(admin)
+                .Search(productParams.SearchText)
+                .Filter(productParams.Categories).AsQueryable();
 
-            var response = new ServiceResponse<List<Product>>()
-            {
-                Data = products
-            };
-            return response;
-        }
+            var pagedResult = await PagedList<Product>.ToBagedList(query, productParams.PageNumber, productParams.PageSize);
 
-        public async Task<ServiceResponse<List<Product>>> GetProductsByCategory(string categoryUrl)
-        {
-            var response = new ServiceResponse<List<Product>>
+            var result = new ProductListDto
             {
-                Data = await _context.Products
-                .Where(p => p.Category!.Url.ToLower() == categoryUrl.ToLower() && p.Visible && !p.Deleted)
-                .Include(p => p.Variants.Where(v => v.Visible && !v.Deleted))
-                .ToListAsync()
+                Products = pagedResult,
+                MetaData = pagedResult.MetaData,
             };
 
-            return response;
-        }
-
-        public async Task<ServiceResponse<ProductSearchDto>> SearchProducts(string searchText, int page)
-        {
-            var pageResults = 2f;
-            var pageCount = Math.Ceiling((await FindProductsBySearchText(searchText)).Count / pageResults);
-            var products = await _context.Products
-                                .Where(p => p.Title.ToLower().Contains(searchText.ToLower()) ||
-                                    p.Description.ToLower().Contains(searchText.ToLower())
-                                    && p.Visible && !p.Deleted)
-                                .Include(p => p.Variants.Where(v => v.Visible && !v.Deleted))
-                                .Skip((page - 1) * (int)pageResults)
-                                .Take((int)pageResults)
-                                .ToListAsync();
-
-            var response = new ServiceResponse<ProductSearchDto>
+            var response = new ServiceResponse<ProductListDto>()
             {
-                Data = new ProductSearchDto
-                {
-                    Products = products,
-                    CurrentPage = page,
-                    Pages = (int)pageCount
-                }
+                Data = result
             };
-
             return response;
-        }
-
-        private async Task<List<Product>> FindProductsBySearchText(string searchText)
-        {
-            return await _context.Products
-                .Include(p => p.Variants.Where(v => v.Visible && !v.Deleted))
-                .Where(p => p.Title.ToLower().Contains(searchText.ToLower())
-                || p.Description.ToLower().Contains(searchText.ToLower())
-                && p.Visible && !p.Deleted)
-                .ToListAsync();
         }
     }
 }

@@ -1,4 +1,7 @@
-﻿@if (ProductService.products == null || ProductService.products.Count == 0)
+﻿@inject IProductService ProductService
+@implements IDisposable
+
+@if (ProductService.products == null || ProductService.products.Count == 0)
 {
     <span>@ProductService.Message</span>
 }
@@ -6,9 +9,7 @@ else
 {
 
     <MudGrid>
-        <MudItem xs="12">
-            <Search />
-        </MudItem>
+
         @foreach (var product in ProductService.products)
         {
             var link = "/product/" + product.Id;
@@ -25,17 +26,48 @@ else
                     </MudCardActions>
                 </MudCard>
             </MudItem>
-
         }
-        <MudItem xs="12">
-           <MudPagination 
-                Color="Color.Primary" 
-                Rectangular ="true" 
-                Class="my-4" 
-                Count="@ProductService.PageCount" 
-                SelectedChanged="PageChanged"/>
-        </MudItem>
     </MudGrid>
+    <MudItem xs="12">
+        <MudPagination Color="Color.Primary"
+                   Rectangular="true"
+                   Class="my-4"
+                   Count="@ProductService.MetaData.TotalPages"
+                   SelectedChanged="PageChanged" />
+    </MudItem>
 
+}
 
+@code {
+    protected override void OnInitialized()
+    {
+        ProductService.ProductsChanged += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        ProductService.ProductsChanged -= StateHasChanged;
+    }
+
+    internal string GetPriceText(Product product)
+    {
+        var variants = product.Variants;
+        if (variants.Count == 0)
+        {
+            return string.Empty;
+        }
+        else if (variants.Count == 1)
+        {
+            return $"${variants[0].Price}";
+        }
+
+        decimal price = variants.Min(v => v.Price);
+        return $"Starting at ${price}";
+
+    }
+
+    private void PageChanged(int i)
+    {
+        ProductService.Paginate(i,false);
+    }
 }

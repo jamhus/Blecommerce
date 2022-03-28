@@ -1,12 +1,24 @@
 ﻿@page "/admin/products"
 @inject IProductService ProductService
 @inject NavigationManager NavigationManager
+@implements IDisposable
+
 @attribute [Authorize(Roles = "Admin")]
 
 <MudTable Loading="_loading" Class="mb-10" Items="ProductService.AdminProducts"
           Hover="true" Elevation="1">
     <ToolBarContent>
         <MudText Typo="Typo.h6">Products</MudText>
+                <MudSpacer />
+
+        <MudTextField @bind-Value="@ProductService.LastSearchString"
+              DebounceInterval="500"
+              OnDebounceIntervalElapsed="HandleIntervalElapsed"
+              Label="Search"
+              Variant="Variant.Outlined"
+              Adornment="Adornment.End"
+              AdornmentIcon="@Icons.Filled.Search"
+              AdornmentColor="Color.Secondary" />
     </ToolBarContent>
     <HeaderContent>
         <MudTh>Title</MudTh>
@@ -55,17 +67,32 @@
             <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="(e)=> EditProduct(context.Id)" Color="Color.Secondary" />
         </MudTd>
     </RowTemplate>
-            <PagerContent>
+    <PagerContent>
             <MudButton Class="ma-3" Variant="Variant.Filled" Color="Color.Secondary" OnClick="CreateProduct">Add new</MudButton>
-        </PagerContent>
+    </PagerContent>
+
 </MudTable>
+    <MudItem xs="12">
+        <MudPagination Color="Color.Primary"
+                   Rectangular="true"
+                   Class="my-4"
+                   Count="@ProductService.MetaData.TotalPages"
+                   SelectedChanged="PageChanged" />
+    </MudItem>
 
 @code {
     private bool _loading = true;
     protected override async Task OnInitializedAsync()
     {
-        await ProductService.GetAdminProducts();
+                ProductService.ProductsChanged += StateHasChanged;
+
+        await ProductService.GetAdminProducts(1);
         _loading = false;
+    }
+
+      public void Dispose()
+    {
+        ProductService.ProductsChanged -= StateHasChanged;
     }
 
      void EditProduct(int productId)
@@ -76,5 +103,15 @@
     void CreateProduct()
     {
         NavigationManager.NavigateTo("admin/product");
+    }
+
+      void HandleIntervalElapsed(string debouncedText)
+    {
+        ProductService.Search(true);
+    }
+    
+    private void PageChanged(int i)
+    {
+        ProductService.Paginate(i,true);
     }
 }

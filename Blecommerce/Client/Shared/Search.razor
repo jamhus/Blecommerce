@@ -1,7 +1,8 @@
-﻿@inject NavigationManager NavigationManager
-@inject IProductService ProductService
+﻿@inject IProductService ProductService
+@inject ICategoryService CategoryService
+@implements IDisposable
 
-<MudTextField @bind-Value="@searchText"
+<MudTextField @bind-Value="@ProductService.LastSearchString"
               DebounceInterval="500"
               OnDebounceIntervalElapsed="HandleIntervalElapsed"
               Label="Search"
@@ -10,23 +11,40 @@
               AdornmentIcon="@Icons.Filled.Search"
               AdornmentColor="Color.Secondary" />
 
+                <MudCard Class="mt-10">
+            @foreach (var category in CategoryService.Categories)
+        {
+
+            <MudCheckBox T="bool" CheckedChanged="@((e) => FilterProducts(category))">
+                @category.Name
+            </MudCheckBox>
+            <br />
+        }
+       </MudCard>
+
 @code {
     private string searchText = string.Empty;
 
-    public void SearchProducts()
-    {
-        NavigationManager.NavigateTo($"search/{searchText}/1");
-    }
-
     void HandleIntervalElapsed(string debouncedText)
     {
-        if (String.IsNullOrWhiteSpace(debouncedText))
-        {
-            NavigationManager.NavigateTo($"/");
-        }
-        else
-        {
-            SearchProducts();
-        }
+        ProductService.Search(false);
+    }
+
+   protected override async Task OnInitializedAsync()
+    {
+         CategoryService.OnChange += StateHasChanged;
+        await CategoryService.GetCategories();
+        await ProductService.GetPagedProducts(1);
+    }
+
+    public void FilterProducts(Category category)
+    {
+        ProductService.Filter(category);
+    }
+
+    
+    public void Dispose()
+    {
+        CategoryService.OnChange -= StateHasChanged;
     }
 }

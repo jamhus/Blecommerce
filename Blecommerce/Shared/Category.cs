@@ -18,6 +18,8 @@ namespace Blecommerce.Shared
         [NotMapped]
         public bool Editing { get; set; } = false;
         [NotMapped]
-        public bool ISNew { get; set; } = false; 
+        public bool ISNew { get; set; } = false;
+        [NotMapped]
+        public bool Checked { get; set; } = false;
     }
 }

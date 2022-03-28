@@ -6,16 +6,20 @@ namespace Blecommerce.Client.Services.ProductService
         event Action ProductsChanged;
         List<Product> products { get; set; }
         List<Product> AdminProducts { get; set; }
+        List<string> CurrentCategories { get; set; }
         string Message { get; set; }
         int CurrentPage { get; set; }
         int PageCount { get; set; }
+        MetaData MetaData { get; set; }
         string LastSearchString { get; set; }
-        Task GetProducts(string? categoryUrl = null);
-        Task GetAdminProducts();
-        Task SearchProducts(string searchtext, int page);
+        Task GetAdminProducts(int page);
         Task<ServiceResponse<Product>> GetProduct(int id);
         Task<Product> CreateProduct(Product product);
         Task<Product> UpdateProduct(Product product);
         Task DeleteProduct(Product product);
+        Task GetPagedProducts(int page);
+        void Paginate(int page, bool admin);
+        void Filter(Category category);
+        void Search(bool admin);
     }
 }

@@ -14,10 +14,11 @@ namespace Blecommerce.Server.Controllers
             _productService = productService;
         }
         
-        [HttpGet]  
-        public async Task<ActionResult<ServiceResponse<List<Product>>>> GetProducts()
+
+        [HttpGet("paged")]
+        public async Task<ActionResult<ServiceResponse<ProductListDto>>> GetPagedProducts([FromQuery] ProductParams productParams)
         {
-            return await _productService.GetProductsAsync();
+            return await _productService.GetPagedProducts(productParams,false);
         }
 
         [HttpGet("{id}")]
@@ -25,30 +26,14 @@ namespace Blecommerce.Server.Controllers
         {
             return await _productService.GetProductAsync(id);
         }
-
-        [HttpGet("category/{categoryUrl}")]
-        public async Task<ActionResult<ServiceResponse<List<Product>>>> GetProductsByCategory(string categoryUrl)
-        {
-            return await _productService.GetProductsByCategory(categoryUrl);
-        }
-
-        [HttpGet("search/{searchText}/{page}")]
-        public async Task<ActionResult<ServiceResponse<ProductSearchDto>>> SearchProduct(string searchText, int page = 1)
-        {
-            return await _productService.SearchProducts(searchText,page);
-        }   
+ 
         
-        [HttpGet("featured")]
-        public async Task<ActionResult<ServiceResponse<List<Product>>>> GetFeaturedProducts()
-        {
-            return await _productService.GetFeaturedProducts();
-        }
-
         [HttpGet("admin"), Authorize(Roles = "Admin")]
 
-        public async Task<ActionResult<ServiceResponse<List<Product>>>> GetAdminProducts()
+        public async Task<ActionResult<ServiceResponse<ProductListDto>>> GetAdminProducts([FromQuery] ProductParams productParams)
         {
-            return await _productService.GetAdminProducts();
+            return await _productService.GetPagedProducts(productParams,true);
+
         }
 
         [HttpPost, Authorize(Roles = "Admin")]

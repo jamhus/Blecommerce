@@ -10,7 +10,7 @@ global using Blecommerce.Server.Services.OrderService;
 global using Blecommerce.Server.Services.PaymentService;
 global using Blecommerce.Server.Services.AddressService;
 global using Blecommerce.Server.Services.ProductTypeService;
-
+global using Blecommerce.Server.Extenstions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 

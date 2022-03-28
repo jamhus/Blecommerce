@@ -1,34 +1,42 @@
 ﻿@page "/"
-@page "/search/{searchText}"
-@page "/search/{searchText}/{page:int}"
-@page "/{categoryUrl}"
+
 @inject IProductService ProductService
+@inject ICategoryService CategoryService
+@implements IDisposable
 
 <PageTitle>Blecommerce</PageTitle>
 
-@if (SearchText == null && CategoryUrl == null)
-{
-    <center>
-        <MudText Typo="Typo.h2">
-            Top Products of Today
-        </MudText>
-    </center>
-}
-<ProductList />
+<MudGrid>
+
+    <MudItem sm="12" md="2">
+        <MudItem xs="12">
+            <Search />
+        </MudItem>
+       
+    </MudItem>
+    <MudItem sm="12" md="10">
+        <ProductList />
+    </MudItem>
+</MudGrid>
+
 
 @code {
-    [Parameter]
-    public string? CategoryUrl { get; set; } = null;
-    [Parameter]
-    public string? SearchText { get; set; } = null;
-    [Parameter]
-    public int Page { get; set; } = 1;
-    protected override async Task OnParametersSetAsync()
+
+    protected override async Task OnInitializedAsync()
     {
-        if (SearchText != null)
-        {
-            await ProductService.SearchProducts(SearchText, Page);
-        }
-        else await ProductService.GetProducts(CategoryUrl);
+         CategoryService.OnChange += StateHasChanged;
+        await CategoryService.GetCategories();
+        await ProductService.GetPagedProducts(1);
+    }
+
+    public void FilterProducts(Category category)
+    {
+        ProductService.Filter(category);
+    }
+
+    
+    public void Dispose()
+    {
+        CategoryService.OnChange -= StateHasChanged;
     }
 }

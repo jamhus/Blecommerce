@@ -12,9 +12,11 @@ namespace Blecommerce.Client.Services.ProductService
         public List<Product> products { get; set; } = new List<Product>();
         public List<Product> AdminProducts { get; set; } = new List<Product>();
         public string Message { get; set; } = "Loading products...";
+        public MetaData MetaData { get; set; }
         public int CurrentPage { get; set; } = 1;
         public int PageCount { get; set; } = 0;
-        public string LastSearchString { get; set; } = String.Empty;   
+        public string LastSearchString { get; set; } = String.Empty;
+        public List<string> CurrentCategories { get; set; } = new List<string>();
 
         public event Action ProductsChanged = default!;
 
@@ -38,46 +40,45 @@ namespace Blecommerce.Client.Services.ProductService
             return content.Data;
         }
 
-        public async Task GetAdminProducts()
+        public async Task GetAdminProducts(int page)
         {
-            var result = await _http
-                .GetFromJsonAsync<ServiceResponse<List<Product>>>("api/product/admin");
-            AdminProducts = result.Data;
-            CurrentPage = 1;
-            PageCount = 0;
-            if (AdminProducts.Count == 0)
-                Message = "No products found.";
+            string categories = string.Join(",", CurrentCategories);
+
+            var result = await _http.GetFromJsonAsync<ServiceResponse<ProductListDto>>(
+                $"api/product/admin?SearchText={LastSearchString}&Categories={categories}&PageNumber={page}&PageSize=6");
+            if (result != null && result.Data != null)
+            {
+                AdminProducts = result.Data.Products;
+                MetaData = result.Data.MetaData;
+            }
+
+            if (products.Count == 0)
+            {
+                Message = "no products found";
+            }
+            ProductsChanged.Invoke();
+
+
         }
 
         public async Task<ServiceResponse<Product>> GetProduct(int id)
         {
             var result = await _http.GetFromJsonAsync<ServiceResponse<Product>>($"api/product/{id}");
             if (result != null && result.Data != null)
-            return result;
+                return result;
             return new ServiceResponse<Product>();
         }
 
-        public async Task GetProducts(string? categoryUrl = null)
+        public async Task GetPagedProducts(int page)
         {
-            var result =
-                await _http.GetFromJsonAsync<ServiceResponse<List<Product>>>
-                (categoryUrl == null ? "api/product/featured" : $"api/product/category/{categoryUrl}");
-            if(result != null && result.Data != null)
-            products = result.Data;
+            string categories = string.Join(",", CurrentCategories);
 
-            ProductsChanged.Invoke();
-        }
-
-
-        public async Task SearchProducts(string searchtext, int page)
-        {
-            LastSearchString = searchtext;
-            var result = await _http.GetFromJsonAsync<ServiceResponse<ProductSearchDto>>($"api/product/search/{searchtext}/{page}");
+            var result = await _http.GetFromJsonAsync<ServiceResponse<ProductListDto>>(
+                $"api/product/paged?SearchText={LastSearchString}&Categories={categories}&PageNumber={page}&PageSize=4");
             if (result != null && result.Data != null)
             {
                 products = result.Data.Products;
-                CurrentPage = result.Data.CurrentPage;
-                PageCount = result.Data.Pages;
+                MetaData = result.Data.MetaData;
             }
 
             if (products.Count == 0)
@@ -86,6 +87,42 @@ namespace Blecommerce.Client.Services.ProductService
             }
 
             ProductsChanged.Invoke();
+        }
+
+        public async void Paginate(int page, bool admin)
+        {
+            if (admin)
+            {
+                await GetAdminProducts(page);
+            }
+            else
+            {
+                await GetPagedProducts(page);
+            }
+        }
+        public async void Search(bool admin)
+        {
+            if (admin)
+            {
+                await GetAdminProducts(1);
+            }
+            else
+            {
+                await GetPagedProducts(1);
+            }
+        }
+
+        public async void Filter(Category category)
+        {
+            if (CurrentCategories.Contains(category.Url))
+            {
+                CurrentCategories.Remove(category.Url);
+            }
+            else
+            {
+                CurrentCategories.Add(category.Url);
+            }
+            await GetPagedProducts(1);
         }
     }
 }
